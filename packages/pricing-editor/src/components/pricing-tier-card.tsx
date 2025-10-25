@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { motion } from 'framer-motion';
-import { 
-  PricingTier, 
-  DragItem, 
-  DropResult 
+import {
+  PricingTier,
+  DragItem,
+  DropResult
 } from '../types/pricing';
 import { cn } from '../utils/cn';
-import { 
-  Edit3, 
-  Trash2, 
-  GripVertical, 
-  Star, 
-  Check, 
-  X,
-  DollarSign,
-  Calendar,
-  Users
+import {
+  Trash2,
+  GripVertical,
+  Star,
+  Check,
+  X
 } from 'lucide-react';
 
 // ============================================================================
@@ -36,15 +31,14 @@ interface PricingTierCardProps {
 
 export function PricingTierCard({
   tier,
-  index,
+  index: _index,
   isSelected,
   isEditing,
   onSelect,
   onUpdate,
   onDelete,
-  onReorder,
+  onReorder: _onReorder,
 }: PricingTierCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -63,7 +57,7 @@ export function PricingTierCard({
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'tier',
-    drop: (item: DragItem, monitor) => {
+    drop: (item: DragItem, _monitor) => {
       if (item.id === tier.id) return;
       
       const dropResult: DropResult = {
@@ -129,8 +123,6 @@ export function PricingTierCard({
         isOver && canDrop ? 'border-green-500' : '',
         tier.isPopular ? 'ring-2 ring-yellow-400' : ''
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onClick={onSelect}
     >
       {/* Popular Badge */}
@@ -152,9 +144,11 @@ export function PricingTierCard({
                 type="text"
                 defaultValue={tier.name}
                 className="text-xl font-bold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none"
-                onBlur={(e) => handleNameEdit(e.target.value)}
+                // @ts-ignore - DOM types not available in DTS build
+                onBlur={(e) => handleNameEdit((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
+                    // @ts-ignore - DOM types not available in DTS build
                     handleNameEdit(e.currentTarget.value);
                   } else if (e.key === 'Escape') {
                     setIsEditingName(false);
@@ -177,9 +171,11 @@ export function PricingTierCard({
                 defaultValue={tier.description || ''}
                 placeholder="Add description..."
                 className="text-sm text-gray-600 bg-transparent border-b border-gray-300 focus:outline-none w-full mt-1"
-                onBlur={(e) => handleDescriptionEdit(e.target.value)}
+                // @ts-ignore - DOM types not available in DTS build
+                onBlur={(e) => handleDescriptionEdit((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
+                    // @ts-ignore - DOM types not available in DTS build
                     handleDescriptionEdit(e.currentTarget.value);
                   } else if (e.key === 'Escape') {
                     setIsEditingDescription(false);
@@ -255,9 +251,11 @@ export function PricingTierCard({
                 type="number"
                 defaultValue={tier.price}
                 className="text-3xl font-bold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none w-24"
-                onBlur={(e) => handlePriceEdit(e.target.value)}
+                // @ts-ignore - DOM types not available in DTS build
+                onBlur={(e) => handlePriceEdit((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
+                    // @ts-ignore - DOM types not available in DTS build
                     handlePriceEdit(e.currentTarget.value);
                   } else if (e.key === 'Escape') {
                     setIsEditingPrice(false);

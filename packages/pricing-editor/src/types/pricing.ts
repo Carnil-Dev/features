@@ -78,6 +78,7 @@ export const PricingTemplateSchema = z.object({
   name: z.string(),
   description: z.string(),
   category: z.enum(['saas', 'ecommerce', 'marketplace', 'api', 'ai', 'custom']),
+  preview: z.string(),
   template: PricingPlanSchema,
   isPublic: z.boolean().default(false),
   createdBy: z.string(),

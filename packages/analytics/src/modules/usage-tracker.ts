@@ -65,34 +65,50 @@ export interface UsageTracker {
   // Track usage events
   trackUsage(event: UsageEvent): Promise<void>;
   trackAIUsage(event: AIUsageEvent): Promise<void>;
-  
+
   // Get usage metrics
   getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageEvent[]>;
   getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageEvent[]>;
-  
+
   // Credit and limit management
   getCreditBalance(customerId: string, featureId: string): Promise<CreditBalance | null>;
-  updateCreditBalance(customerId: string, featureId: string, amount: number): Promise<CreditBalance>;
+  updateCreditBalance(
+    customerId: string,
+    featureId: string,
+    amount: number
+  ): Promise<CreditBalance>;
   setUsageLimit(customerId: string, limit: UsageLimit): Promise<void>;
   getUsageLimit(customerId: string, featureId: string): Promise<UsageLimit | null>;
-  
+
   // Check if usage is allowed
-  checkUsageAllowed(customerId: string, featureId: string, requiredUsage: number): Promise<{
+  checkUsageAllowed(
+    customerId: string,
+    featureId: string,
+    requiredUsage: number
+  ): Promise<{
     allowed: boolean;
     remaining: number;
     limit: number;
     resetAt: Date;
   }>;
-  
+
   // Analytics queries
-  getUsageAnalytics(customerId: string, startDate: Date, endDate: Date): Promise<{
+  getUsageAnalytics(
+    customerId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<{
     totalUsage: number;
     totalCost: number;
     topFeatures: Array<{ featureId: string; usage: number; cost: number }>;
     dailyBreakdown: Array<{ date: string; usage: number; cost: number }>;
   }>;
-  
-  getAIUsageAnalytics(customerId: string, startDate: Date, endDate: Date): Promise<{
+
+  getAIUsageAnalytics(
+    customerId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<{
     totalTokens: number;
     totalCost: number;
     topModels: Array<{ modelId: string; tokens: number; cost: number }>;
@@ -107,7 +123,6 @@ export interface UsageTracker {
 export class RealTimeUsageMeter {
   private usageCache = new Map<string, number>();
   private lastReset = new Map<string, Date>();
-  private limits = new Map<string, UsageLimit>();
 
   constructor(private tracker: UsageTracker) {}
 
@@ -118,7 +133,7 @@ export class RealTimeUsageMeter {
 
     // Check if usage is allowed
     const allowed = await this.tracker.checkUsageAllowed(customerId, featureId, usage);
-    
+
     if (!allowed.allowed) {
       return false;
     }
@@ -137,7 +152,12 @@ export class RealTimeUsageMeter {
     return true;
   }
 
-  async trackAIUsage(customerId: string, modelId: string, tokens: number, cost: number): Promise<boolean> {
+  async trackAIUsage(
+    customerId: string,
+    modelId: string,
+    tokens: number,
+    cost: number
+  ): Promise<boolean> {
     // Track AI usage
     await this.tracker.trackAIUsage({
       customerId,
@@ -172,7 +192,10 @@ export class RealTimeUsageMeter {
 export class UsageAnalyticsEngine {
   constructor(private tracker: UsageTracker) {}
 
-  async generateCustomerReport(customerId: string, period: string = 'month'): Promise<{
+  async generateCustomerReport(
+    customerId: string,
+    period: string = 'month'
+  ): Promise<{
     summary: {
       totalUsage: number;
       totalCost: number;
@@ -189,7 +212,7 @@ export class UsageAnalyticsEngine {
   }> {
     const endDate = new Date();
     const startDate = new Date();
-    
+
     switch (period) {
       case 'day':
         startDate.setDate(endDate.getDate() - 1);
@@ -217,7 +240,9 @@ export class UsageAnalyticsEngine {
       },
       trends: {
         usageGrowth: this.calculateGrowthRate(analytics.dailyBreakdown),
-        costGrowth: this.calculateGrowthRate(analytics.dailyBreakdown.map(d => ({ ...d, usage: d.cost }))),
+        costGrowth: this.calculateGrowthRate(
+          analytics.dailyBreakdown.map(d => ({ ...d, usage: d.cost }))
+        ),
         peakUsageDay: this.findPeakDay(analytics.dailyBreakdown),
         peakUsageHour: this.findPeakHour(analytics.dailyBreakdown),
       },
@@ -227,20 +252,18 @@ export class UsageAnalyticsEngine {
 
   private calculateGrowthRate(data: Array<{ usage: number }>): number {
     if (data.length < 2) return 0;
-    
+
     const first = data[0].usage;
     const last = data[data.length - 1].usage;
-    
+
     return ((last - first) / first) * 100;
   }
 
   private findPeakDay(data: Array<{ date: string; usage: number }>): string {
-    return data.reduce((peak, current) => 
-      current.usage > peak.usage ? current : peak
-    ).date;
+    return data.reduce((peak, current) => (current.usage > peak.usage ? current : peak)).date;
   }
 
-  private findPeakHour(data: Array<{ date: string; usage: number }>): number {
+  private findPeakHour(_data: Array<{ date: string; usage: number }>): number {
     // This would require hourly breakdown data
     return 14; // 2 PM as example
   }
@@ -258,7 +281,9 @@ export class UsageAnalyticsEngine {
 
     if (analytics.topFeatures.length > 0) {
       const topFeature = analytics.topFeatures[0];
-      recommendations.push(`Optimize usage of ${topFeature.featureId} - it's your most used feature`);
+      recommendations.push(
+        `Optimize usage of ${topFeature.featureId} - it's your most used feature`
+      );
     }
 
     return recommendations;

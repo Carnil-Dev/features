@@ -1,15 +1,11 @@
-import React, { useReducer, useCallback, useState } from 'react';
+import { useReducer, useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  PricingEditorProps, 
-  PricingEditorState, 
-  PricingEditorAction,
-  PricingPlan,
+import {
+  PricingEditorProps,
   PricingTier,
-  ABTest,
-  GrandfatheringRule
+  ABTest
 } from '../types/pricing';
 import { PricingTierCard } from './pricing-tier-card';
 import { PricingTierEditor } from './pricing-tier-editor';
@@ -27,7 +23,6 @@ import { cn } from '../utils/cn';
 
 export function PricingEditor({
   initialPlan,
-  onPlanChange,
   onSave,
   onPublish,
   onABTestStart,
@@ -37,7 +32,6 @@ export function PricingEditor({
   onGrandfatheringRuleDelete,
   templates = [],
   onTemplateSelect,
-  onTemplateCreate,
   currency = 'USD',
   supportedCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'],
   features = [],
@@ -63,11 +57,6 @@ export function PricingEditor({
   // ============================================================================
   // Event Handlers
   // ============================================================================
-
-  const handlePlanChange = useCallback((plan: PricingPlan) => {
-    dispatch({ type: 'SET_PLAN', payload: plan });
-    onPlanChange?.(plan);
-  }, [onPlanChange]);
 
   const handleTierAdd = useCallback((tier: PricingTier) => {
     dispatch({ type: 'ADD_TIER', payload: tier });
@@ -160,8 +149,8 @@ export function PricingEditor({
           <p className="text-gray-500 mb-4">Select a template or create a new plan to get started.</p>
           <TemplateSelector
             templates={templates}
-            onSelect={onTemplateSelect}
-            onCreate={onTemplateCreate}
+            onSelect={onTemplateSelect || ((_template) => {})}
+            onCreate={() => {}}
           />
         </div>
       </div>
@@ -269,6 +258,7 @@ export function PricingEditor({
                     interval: 'month',
                     intervalCount: 1,
                     features: [],
+                    isPopular: false,
                     isActive: true,
                     sortOrder: state.currentPlan!.tiers.length,
                   };
@@ -307,9 +297,9 @@ export function PricingEditor({
             {/* Grandfathering Panel */}
             <GrandfatheringPanel
               rules={state.grandfatheringRules}
-              onAdd={onGrandfatheringRuleAdd}
-              onUpdate={onGrandfatheringRuleUpdate}
-              onDelete={onGrandfatheringRuleDelete}
+              onAdd={onGrandfatheringRuleAdd || (() => {})}
+              onUpdate={onGrandfatheringRuleUpdate || (() => {})}
+              onDelete={onGrandfatheringRuleDelete || (() => {})}
             />
 
             {/* Pricing Calculator */}

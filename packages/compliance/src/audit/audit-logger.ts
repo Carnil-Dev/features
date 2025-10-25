@@ -98,10 +98,9 @@ export class AuditLogger {
   private events: AuditEvent[] = [];
   private maxEvents: number = 10000;
   private retentionDays: number = 2555; // 7 years for compliance
-  private encryptionKey: string;
 
-  constructor(encryptionKey?: string) {
-    this.encryptionKey = encryptionKey || process.env.AUDIT_ENCRYPTION_KEY || 'default-key';
+  constructor(_encryptionKey?: string) {
+    // Encryption key handling would be implemented here
   }
 
   // ============================================================================
@@ -141,6 +140,8 @@ export class AuditLogger {
       description,
       metadata,
       severity: 'medium',
+      source: 'carnil-sdk',
+      version: '1.0.0',
     });
   }
 
@@ -161,6 +162,8 @@ export class AuditLogger {
       description,
       metadata,
       severity: 'high',
+      source: 'carnil-sdk',
+      version: '1.0.0',
     });
   }
 
@@ -180,6 +183,8 @@ export class AuditLogger {
       description: `Accessed ${resourceType} ${resourceId}`,
       metadata,
       severity: 'medium',
+      source: 'carnil-sdk',
+      version: '1.0.0',
     });
   }
 
@@ -196,6 +201,8 @@ export class AuditLogger {
       description,
       metadata,
       severity,
+      source: 'carnil-sdk',
+      version: '1.0.0',
     });
   }
 
@@ -211,6 +218,8 @@ export class AuditLogger {
       description,
       metadata,
       severity: 'high',
+      source: 'carnil-sdk',
+      version: '1.0.0',
     });
   }
 
@@ -429,9 +438,9 @@ export class AuditLogger {
     events: AuditEvent[],
     findings: ComplianceReport['findings']
   ): ComplianceReport['summary'] {
-    const violations = findings.filter(f => f.type === 'violation').length;
-    const warnings = findings.filter(f => f.type === 'warning').length;
-    const recommendations = findings.filter(f => f.type === 'recommendation').length;
+    const violations = findings.filter((f: any) => f.type === 'violation').length;
+    const warnings = findings.filter((f: any) => f.type === 'warning').length;
+    const recommendations = findings.filter((f: any) => f.type === 'recommendation').length;
     
     const complianceScore = Math.max(0, 100 - (violations * 20) - (warnings * 10) - (recommendations * 5));
     

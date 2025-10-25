@@ -36,11 +36,10 @@ export type AdyenPaymentMethod = z.infer<typeof AdyenPaymentMethodSchema>;
 
 export class AdyenProvider implements PaymentProvider {
   public name = 'adyen';
-  private config: AdyenConfig;
   private apiClient: any; // Adyen API client
 
   constructor(config: AdyenConfig) {
-    this.config = AdyenConfigSchema.parse(config);
+    AdyenConfigSchema.parse(config); // Validate config
     this.initializeApiClient();
   }
 
@@ -49,7 +48,7 @@ export class AdyenProvider implements PaymentProvider {
   // ============================================================================
 
   async init(config: Record<string, any>): Promise<void> {
-    this.config = AdyenConfigSchema.parse(config);
+    AdyenConfigSchema.parse(config); // Validate config
     this.initializeApiClient();
   }
 
@@ -71,25 +70,25 @@ export class AdyenProvider implements PaymentProvider {
     };
   }
 
-  async retrieveCustomer(params: any): Promise<any> {
+  async retrieveCustomer(_params: any): Promise<any> {
     // Adyen doesn't store customer data directly
     // Return customer data from your own database
     throw new Error('Adyen does not support customer retrieval. Store customer data in your own database.');
   }
 
-  async updateCustomer(id: string, params: any): Promise<any> {
+  async updateCustomer(_id: string, _params: any): Promise<any> {
     // Adyen doesn't support customer updates
     // Update customer data in your own database
     throw new Error('Adyen does not support customer updates. Update customer data in your own database.');
   }
 
-  async deleteCustomer(id: string): Promise<void> {
+  async deleteCustomer(_id: string): Promise<void> {
     // Adyen doesn't support customer deletion
     // Delete customer data from your own database
     throw new Error('Adyen does not support customer deletion. Delete customer data from your own database.');
   }
 
-  async listCustomers(params?: any): Promise<any[]> {
+  async listCustomers(_params?: any): Promise<any[]> {
     // Adyen doesn't support customer listing
     // List customers from your own database
     throw new Error('Adyen does not support customer listing. List customers from your own database.');
@@ -99,25 +98,25 @@ export class AdyenProvider implements PaymentProvider {
   // Payment Methods
   // ============================================================================
 
-  async createPaymentMethod(params: any): Promise<any> {
+  async createPaymentMethod(_params: any): Promise<any> {
     // Adyen handles payment methods differently
     // This would typically be handled during payment creation
     throw new Error('Adyen handles payment methods during payment creation. Use createPaymentIntent instead.');
   }
 
-  async retrievePaymentMethod(params: any): Promise<any> {
+  async retrievePaymentMethod(_params: any): Promise<any> {
     throw new Error('Adyen does not support payment method retrieval.');
   }
 
-  async updatePaymentMethod(id: string, params: any): Promise<any> {
+  async updatePaymentMethod(_id: string, _params: any): Promise<any> {
     throw new Error('Adyen does not support payment method updates.');
   }
 
-  async deletePaymentMethod(id: string): Promise<void> {
+  async deletePaymentMethod(_id: string): Promise<void> {
     throw new Error('Adyen does not support payment method deletion.');
   }
 
-  async listPaymentMethods(params?: any): Promise<any[]> {
+  async listPaymentMethods(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support payment method listing.');
   }
 
@@ -151,8 +150,9 @@ export class AdyenProvider implements PaymentProvider {
         metadata: response.metadata,
         created: new Date().toISOString(),
       };
-    } catch (error) {
-      throw new Error(`Adyen payment creation failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen payment creation failed: ${message}`);
     }
   }
 
@@ -169,12 +169,13 @@ export class AdyenProvider implements PaymentProvider {
         metadata: response.metadata,
         created: response.createdAt,
       };
-    } catch (error) {
-      throw new Error(`Adyen payment retrieval failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen payment retrieval failed: ${message}`);
     }
   }
 
-  async updatePaymentIntent(id: string, params: any): Promise<any> {
+  async updatePaymentIntent(_id: string, _params: any): Promise<any> {
     // Adyen doesn't support payment updates
     throw new Error('Adyen does not support payment updates.');
   }
@@ -190,12 +191,13 @@ export class AdyenProvider implements PaymentProvider {
         status: 'cancelled',
         cancelled: new Date().toISOString(),
       };
-    } catch (error) {
-      throw new Error(`Adyen payment cancellation failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen payment cancellation failed: ${message}`);
     }
   }
 
-  async listPaymentIntents(params?: any): Promise<any[]> {
+  async listPaymentIntents(_params?: any): Promise<any[]> {
     // Adyen doesn't support payment listing
     throw new Error('Adyen does not support payment listing.');
   }
@@ -204,25 +206,25 @@ export class AdyenProvider implements PaymentProvider {
   // Subscriptions
   // ============================================================================
 
-  async createSubscription(params: any): Promise<any> {
+  async createSubscription(_params: any): Promise<any> {
     // Adyen doesn't have native subscriptions
     // Implement using recurring payments
     throw new Error('Adyen does not support native subscriptions. Implement using recurring payments.');
   }
 
-  async retrieveSubscription(params: any): Promise<any> {
+  async retrieveSubscription(_params: any): Promise<any> {
     throw new Error('Adyen does not support subscription retrieval.');
   }
 
-  async updateSubscription(id: string, params: any): Promise<any> {
+  async updateSubscription(_id: string, _params: any): Promise<any> {
     throw new Error('Adyen does not support subscription updates.');
   }
 
-  async cancelSubscription(id: string): Promise<any> {
+  async cancelSubscription(_id: string): Promise<any> {
     throw new Error('Adyen does not support subscription cancellation.');
   }
 
-  async listSubscriptions(params?: any): Promise<any[]> {
+  async listSubscriptions(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support subscription listing.');
   }
 
@@ -230,11 +232,11 @@ export class AdyenProvider implements PaymentProvider {
   // Invoices
   // ============================================================================
 
-  async retrieveInvoice(params: any): Promise<any> {
+  async retrieveInvoice(_params: any): Promise<any> {
     throw new Error('Adyen does not support invoice retrieval.');
   }
 
-  async listInvoices(params?: any): Promise<any[]> {
+  async listInvoices(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support invoice listing.');
   }
 
@@ -261,8 +263,9 @@ export class AdyenProvider implements PaymentProvider {
         status: this.mapRefundStatus(response.resultCode),
         created: new Date().toISOString(),
       };
-    } catch (error) {
-      throw new Error(`Adyen refund creation failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen refund creation failed: ${message}`);
     }
   }
 
@@ -278,12 +281,13 @@ export class AdyenProvider implements PaymentProvider {
         status: this.mapRefundStatus(response.resultCode),
         created: response.createdAt,
       };
-    } catch (error) {
-      throw new Error(`Adyen refund retrieval failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen refund retrieval failed: ${message}`);
     }
   }
 
-  async listRefunds(params?: any): Promise<any[]> {
+  async listRefunds(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support refund listing.');
   }
 
@@ -291,11 +295,11 @@ export class AdyenProvider implements PaymentProvider {
   // Disputes
   // ============================================================================
 
-  async retrieveDispute(params: any): Promise<any> {
+  async retrieveDispute(_params: any): Promise<any> {
     throw new Error('Adyen does not support dispute retrieval.');
   }
 
-  async listDisputes(params?: any): Promise<any[]> {
+  async listDisputes(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support dispute listing.');
   }
 
@@ -303,35 +307,35 @@ export class AdyenProvider implements PaymentProvider {
   // Products and Prices
   // ============================================================================
 
-  async createProduct(params: any): Promise<any> {
+  async createProduct(_params: any): Promise<any> {
     throw new Error('Adyen does not support product creation.');
   }
 
-  async retrieveProduct(params: any): Promise<any> {
+  async retrieveProduct(_params: any): Promise<any> {
     throw new Error('Adyen does not support product retrieval.');
   }
 
-  async updateProduct(id: string, params: any): Promise<any> {
+  async updateProduct(_id: string, _params: any): Promise<any> {
     throw new Error('Adyen does not support product updates.');
   }
 
-  async listProducts(params?: any): Promise<any[]> {
+  async listProducts(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support product listing.');
   }
 
-  async createPrice(params: any): Promise<any> {
+  async createPrice(_params: any): Promise<any> {
     throw new Error('Adyen does not support price creation.');
   }
 
-  async retrievePrice(params: any): Promise<any> {
+  async retrievePrice(_params: any): Promise<any> {
     throw new Error('Adyen does not support price retrieval.');
   }
 
-  async updatePrice(id: string, params: any): Promise<any> {
+  async updatePrice(_id: string, _params: any): Promise<any> {
     throw new Error('Adyen does not support price updates.');
   }
 
-  async listPrices(params?: any): Promise<any[]> {
+  async listPrices(_params?: any): Promise<any[]> {
     throw new Error('Adyen does not support price listing.');
   }
 
@@ -339,7 +343,7 @@ export class AdyenProvider implements PaymentProvider {
   // Webhook Handling
   // ============================================================================
 
-  async verifyWebhook(payload: string, signature: string): Promise<boolean> {
+  async verifyWebhook(_payload: string, _signature: string): Promise<boolean> {
     // Implement Adyen webhook signature verification
     // This would use Adyen's webhook signature verification
     return true; // Simplified for now
@@ -354,8 +358,9 @@ export class AdyenProvider implements PaymentProvider {
         data: event,
         created: new Date().toISOString(),
       };
-    } catch (error) {
-      throw new Error(`Adyen webhook parsing failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Adyen webhook parsing failed: ${message}`);
     }
   }
 
@@ -389,14 +394,14 @@ export class AdyenProvider implements PaymentProvider {
             createdAt: new Date().toISOString(),
           };
         },
-        cancel: async (cancelRequest: any) => {
+        cancel: async (_cancelRequest: any) => {
           // Mock Adyen payment cancellation
           return {
             pspReference: `psp_${Date.now()}`,
             resultCode: 'Cancelled',
           };
         },
-        refund: async (refundRequest: any) => {
+        refund: async (_refundRequest: any) => {
           // Mock Adyen refund creation
           return {
             pspReference: `psp_${Date.now()}`,

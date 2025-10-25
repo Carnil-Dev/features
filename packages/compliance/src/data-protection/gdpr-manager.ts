@@ -10,13 +10,15 @@ export const DataSubjectSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
   phone: z.string().optional(),
-  address: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    postalCode: z.string().optional(),
-    country: z.string().optional(),
-  }).optional(),
+  address: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      postalCode: z.string().optional(),
+      country: z.string().optional(),
+    })
+    .optional(),
   metadata: z.record(z.string()).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -114,7 +116,9 @@ export class GDPRManager {
   // Data Subject Management
   // ============================================================================
 
-  async createDataSubject(data: Omit<DataSubject, 'id' | 'createdAt' | 'updatedAt'>): Promise<DataSubject> {
+  async createDataSubject(
+    data: Omit<DataSubject, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<DataSubject> {
     const dataSubject: DataSubject = {
       id: this.generateId(),
       ...data,
@@ -154,12 +158,16 @@ export class GDPRManager {
     phone?: string;
   }): Promise<DataSubject[]> {
     const subjects = Array.from(this.dataSubjects.values());
-    
+
     return subjects.filter(subject => {
       if (query.email && !subject.email.toLowerCase().includes(query.email.toLowerCase())) {
         return false;
       }
-      if (query.name && subject.name && !subject.name.toLowerCase().includes(query.name.toLowerCase())) {
+      if (
+        query.name &&
+        subject.name &&
+        !subject.name.toLowerCase().includes(query.name.toLowerCase())
+      ) {
         return false;
       }
       if (query.phone && subject.phone && !subject.phone.includes(query.phone)) {
@@ -191,10 +199,12 @@ export class GDPRManager {
     return this.processingActivities.get(id) || null;
   }
 
-  async getProcessingActivitiesForSubject(dataSubjectId: string): Promise<DataProcessingActivity[]> {
+  async getProcessingActivitiesForSubject(
+    dataSubjectId: string
+  ): Promise<DataProcessingActivity[]> {
     const activities = Array.from(this.processingActivities.values());
-    return activities.filter(activity => 
-      activity.dataSubjects.includes(dataSubjectId) && activity.isActive
+    return activities.filter(
+      activity => activity.dataSubjects.includes(dataSubjectId) && activity.isActive
     );
   }
 
@@ -231,20 +241,20 @@ export class GDPRManager {
   async withdrawConsent(dataSubjectId: string, purpose: string): Promise<boolean> {
     const consents = this.consentRecords.get(dataSubjectId) || [];
     const consent = consents.find(c => c.purpose === purpose && c.consentGiven);
-    
+
     if (consent) {
       consent.consentGiven = false;
       consent.withdrawalDate = new Date();
       return true;
     }
-    
+
     return false;
   }
 
   async hasValidConsent(dataSubjectId: string, purpose: string): Promise<boolean> {
     const consents = this.consentRecords.get(dataSubjectId) || [];
     const consent = consents.find(c => c.purpose === purpose);
-    
+
     return consent ? consent.consentGiven : false;
   }
 
@@ -298,11 +308,11 @@ export class GDPRManager {
 
   async getErasureRequests(dataSubjectId?: string): Promise<DataErasureRequest[]> {
     const requests = Array.from(this.erasureRequests.values());
-    
+
     if (dataSubjectId) {
       return requests.filter(request => request.dataSubjectId === dataSubjectId);
     }
-    
+
     return requests;
   }
 
@@ -353,11 +363,11 @@ export class GDPRManager {
 
   async getPortabilityRequests(dataSubjectId?: string): Promise<DataPortabilityRequest[]> {
     const requests = Array.from(this.portabilityRequests.values());
-    
+
     if (dataSubjectId) {
       return requests.filter(request => request.dataSubjectId === dataSubjectId);
     }
-    
+
     return requests;
   }
 
@@ -365,7 +375,7 @@ export class GDPRManager {
   // GDPR Compliance Reporting
   // ============================================================================
 
-  async generateGDPRReport(period: { start: Date; end: Date }): Promise<{
+  async generateGDPRReport(_period: { start: Date; end: Date }): Promise<{
     summary: {
       totalDataSubjects: number;
       activeProcessingActivities: number;
@@ -387,13 +397,10 @@ export class GDPRManager {
     const erasureRequests = Array.from(this.erasureRequests.values());
     const portabilityRequests = Array.from(this.portabilityRequests.values());
 
-    const totalConsentRecords = Array.from(this.consentRecords.values())
-      .flat()
-      .length;
+    const totalConsentRecords = Array.from(this.consentRecords.values()).flat().length;
 
-    const consentRate = dataSubjects.length > 0 
-      ? (totalConsentRecords / dataSubjects.length) * 100 
-      : 0;
+    const consentRate =
+      dataSubjects.length > 0 ? (totalConsentRecords / dataSubjects.length) * 100 : 0;
 
     const erasureResponseTime = this.calculateAverageResponseTime(erasureRequests);
     const portabilityResponseTime = this.calculateAverageResponseTime(portabilityRequests);
@@ -439,7 +446,7 @@ export class GDPRManager {
     // 2. Remove or anonymize the data
     // 3. Update backup systems
     // 4. Log the erasure process
-    
+
     console.log(`Performing data erasure for subject ${dataSubjectId}`);
     console.log(`Data categories: ${erasureDetails.dataCategories.join(', ')}`);
     console.log(`Systems affected: ${erasureDetails.systemsAffected.join(', ')}`);
@@ -447,7 +454,7 @@ export class GDPRManager {
 
   private async generateDataExport(
     dataSubjectId: string,
-    dataCategories: string[]
+    _dataCategories: string[]
   ): Promise<Record<string, any>> {
     const dataSubject = this.dataSubjects.get(dataSubjectId);
     if (!dataSubject) throw new Error('Data subject not found');
@@ -472,18 +479,20 @@ export class GDPRManager {
   }
 
   private async uploadDataExport(
-    data: Record<string, any>,
+    _data: Record<string, any>,
     format: DataPortabilityRequest['dataFormat']
   ): Promise<string> {
     // Simulate data upload
     const filename = `data_export_${Date.now()}.${format}`;
     const downloadUrl = `https://example.com/downloads/${filename}`;
-    
+
     console.log(`Data export uploaded: ${downloadUrl}`);
     return downloadUrl;
   }
 
-  private calculateAverageResponseTime(requests: Array<{ processedAt?: Date; requestDate: Date }>): number {
+  private calculateAverageResponseTime(
+    requests: Array<{ processedAt?: Date; requestDate: Date }>
+  ): number {
     const completedRequests = requests.filter(r => r.processedAt);
     if (completedRequests.length === 0) return 0;
 

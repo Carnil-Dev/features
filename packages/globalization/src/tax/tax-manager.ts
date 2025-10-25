@@ -360,6 +360,7 @@ export class TaxManager {
         rate: 0,
         type: 'sales',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // California
@@ -370,6 +371,7 @@ export class TaxManager {
         rate: 0.0725,
         type: 'sales',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // New York
@@ -380,6 +382,7 @@ export class TaxManager {
         rate: 0.08,
         type: 'sales',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // Texas
@@ -390,6 +393,7 @@ export class TaxManager {
         rate: 0.0625,
         type: 'sales',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // Germany
@@ -400,6 +404,7 @@ export class TaxManager {
         rate: 0.19,
         type: 'vat',
         isActive: true,
+        isInclusive: true,
         effectiveFrom: new Date('2020-01-01'),
       },
       // France
@@ -410,6 +415,7 @@ export class TaxManager {
         rate: 0.20,
         type: 'vat',
         isActive: true,
+        isInclusive: true,
         effectiveFrom: new Date('2020-01-01'),
       },
       // UK
@@ -420,6 +426,7 @@ export class TaxManager {
         rate: 0.20,
         type: 'vat',
         isActive: true,
+        isInclusive: true,
         effectiveFrom: new Date('2020-01-01'),
       },
       // India
@@ -430,6 +437,7 @@ export class TaxManager {
         rate: 0.18,
         type: 'gst',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // Canada
@@ -440,6 +448,7 @@ export class TaxManager {
         rate: 0.05,
         type: 'gst',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
       // Australia
@@ -450,6 +459,7 @@ export class TaxManager {
         rate: 0.10,
         type: 'gst',
         isActive: true,
+        isInclusive: false,
         effectiveFrom: new Date('2020-01-01'),
       },
     ];

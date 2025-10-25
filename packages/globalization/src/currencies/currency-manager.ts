@@ -50,8 +50,6 @@ export type CurrencyConversion = z.infer<typeof CurrencyConversionSchema>;
 export class CurrencyManager {
   private currencies: Map<string, Currency> = new Map();
   private exchangeRates: Map<string, ExchangeRate> = new Map();
-  private lastUpdate: Date | null = null;
-  private updateInterval: number = 24 * 60 * 60 * 1000; // 24 hours
 
   constructor() {
     this.initializeDefaultCurrencies();
@@ -88,12 +86,10 @@ export class CurrencyManager {
   async updateExchangeRates(provider: 'fixer' | 'exchangerate' | 'manual' = 'fixer'): Promise<void> {
     try {
       const rates = await this.fetchExchangeRates(provider);
-      
+
       for (const rate of rates) {
         this.exchangeRates.set(`${rate.from}-${rate.to}`, rate);
       }
-      
-      this.lastUpdate = new Date();
     } catch (error) {
       console.error('Failed to update exchange rates:', error);
       throw error;

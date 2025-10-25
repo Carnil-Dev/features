@@ -1,5 +1,17 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 // ============================================================================
 // Customer Dashboard Components
@@ -20,7 +32,7 @@ interface CustomerDashboardProps {
   };
 }
 
-export function CustomerDashboard({ customerId, data }: CustomerDashboardProps) {
+export function CustomerDashboard({ data }: CustomerDashboardProps) {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   return (
@@ -29,19 +41,23 @@ export function CustomerDashboard({ customerId, data }: CustomerDashboardProps) 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-700">Total Usage</h3>
-          <p className="text-3xl font-bold text-blue-600">{data.summary.totalUsage.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-blue-600">
+            {data.summary.totalUsage.toLocaleString()}
+          </p>
           <p className="text-sm text-gray-500">units this month</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-700">Total Cost</h3>
           <p className="text-3xl font-bold text-green-600">${data.summary.totalCost.toFixed(2)}</p>
           <p className="text-sm text-gray-500">this month</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-700">Daily Average</h3>
-          <p className="text-3xl font-bold text-purple-600">{data.summary.averageDailyUsage.toFixed(0)}</p>
+          <p className="text-3xl font-bold text-purple-600">
+            {data.summary.averageDailyUsage.toFixed(0)}
+          </p>
           <p className="text-sm text-gray-500">units per day</p>
         </div>
       </div>
@@ -104,7 +120,7 @@ export function CustomerDashboard({ customerId, data }: CustomerDashboardProps) 
                 fill="#8884d8"
                 dataKey="tokens"
               >
-                {data.topModels.map((entry, index) => (
+                {data.topModels.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -137,11 +153,13 @@ export function UsageMeter({ current, limit, featureId, resetAt }: UsageMeterPro
     <div className="bg-white p-6 rounded-lg shadow">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">{featureId}</h3>
-        <span className={`text-sm font-medium ${isOverLimit ? 'text-red-600' : isNearLimit ? 'text-yellow-600' : 'text-green-600'}`}>
+        <span
+          className={`text-sm font-medium ${isOverLimit ? 'text-red-600' : isNearLimit ? 'text-yellow-600' : 'text-green-600'}`}
+        >
           {current.toLocaleString()} / {limit.toLocaleString()}
         </span>
       </div>
-      
+
       <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div
           className={`h-2.5 rounded-full ${
@@ -150,7 +168,7 @@ export function UsageMeter({ current, limit, featureId, resetAt }: UsageMeterPro
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />
       </div>
-      
+
       <div className="flex justify-between text-sm text-gray-500 mt-2">
         <span>Reset: {resetAt.toLocaleDateString()}</span>
         <span>{percentage.toFixed(1)}% used</span>
@@ -174,7 +192,7 @@ interface AIUsageDashboardProps {
   };
 }
 
-export function AIUsageDashboard({ customerId, data }: AIUsageDashboardProps) {
+export function AIUsageDashboard({ data }: AIUsageDashboardProps) {
   return (
     <div className="space-y-6">
       {/* AI Summary */}
@@ -184,13 +202,13 @@ export function AIUsageDashboard({ customerId, data }: AIUsageDashboardProps) {
           <p className="text-3xl font-bold text-blue-600">{data.totalTokens.toLocaleString()}</p>
           <p className="text-sm text-gray-500">tokens processed</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-700">Total Cost</h3>
           <p className="text-3xl font-bold text-green-600">${data.totalCost.toFixed(2)}</p>
           <p className="text-sm text-gray-500">AI usage cost</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-700">Avg Cost/Token</h3>
           <p className="text-3xl font-bold text-purple-600">

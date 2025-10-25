@@ -35,23 +35,59 @@ export class ComplianceManager {
     return this.auditLogger.logEvent(event);
   }
 
-  async logUserAction(userId: string, action: string, description: string, metadata?: Record<string, any>) {
+  async logUserAction(
+    userId: string,
+    action: string,
+    description: string,
+    metadata?: Record<string, any>
+  ) {
     return this.auditLogger.logUserAction(userId, action, description, metadata);
   }
 
-  async logPaymentEvent(customerId: string, eventType: any, action: string, description: string, resourceId?: string, metadata?: Record<string, any>) {
-    return this.auditLogger.logPaymentEvent(customerId, eventType, action, description, resourceId, metadata);
+  async logPaymentEvent(
+    customerId: string,
+    eventType: any,
+    action: string,
+    description: string,
+    resourceId?: string,
+    metadata?: Record<string, any>
+  ) {
+    return this.auditLogger.logPaymentEvent(
+      customerId,
+      eventType,
+      action,
+      description,
+      resourceId,
+      metadata
+    );
   }
 
-  async logDataAccess(userId: string, resourceType: string, resourceId: string, action: string, metadata?: Record<string, any>) {
+  async logDataAccess(
+    userId: string,
+    resourceType: string,
+    resourceId: string,
+    action: string,
+    metadata?: Record<string, any>
+  ) {
     return this.auditLogger.logDataAccess(userId, resourceType, resourceId, action, metadata);
   }
 
-  async logSecurityEvent(eventType: 'security_event', action: string, description: string, severity?: any, metadata?: Record<string, any>) {
+  async logSecurityEvent(
+    eventType: 'security_event',
+    action: string,
+    description: string,
+    severity?: any,
+    metadata?: Record<string, any>
+  ) {
     return this.auditLogger.logSecurityEvent(eventType, action, description, severity, metadata);
   }
 
-  async logComplianceEvent(eventType: 'compliance_event', action: string, description: string, metadata?: Record<string, any>) {
+  async logComplianceEvent(
+    eventType: 'compliance_event',
+    action: string,
+    description: string,
+    metadata?: Record<string, any>
+  ) {
     return this.auditLogger.logComplianceEvent(eventType, action, description, metadata);
   }
 
@@ -63,7 +99,11 @@ export class ComplianceManager {
     return this.auditLogger.getAuditTrail(entityId, entityType);
   }
 
-  async generateComplianceReport(reportType: any, period: { start: Date; end: Date }, generatedBy: string) {
+  async generateAuditComplianceReport(
+    reportType: any,
+    period: { start: Date; end: Date },
+    generatedBy: string
+  ) {
     return this.auditLogger.generateComplianceReport(reportType, period, generatedBy);
   }
 
@@ -202,11 +242,10 @@ export class ComplianceManager {
     }
 
     // Calculate overall score
-    const totalFindings = findings.length;
     const criticalFindings = findings.filter(f => f.severity === 'high').length;
     const mediumFindings = findings.filter(f => f.severity === 'medium').length;
-    
-    const overallScore = Math.max(0, 100 - (criticalFindings * 20) - (mediumFindings * 10));
+
+    const overallScore = Math.max(0, 100 - criticalFindings * 20 - mediumFindings * 10);
     const status = overallScore >= 80 ? 'COMPLIANT' : 'NON_COMPLIANT';
 
     // Generate recommendations
@@ -228,14 +267,16 @@ export class ComplianceManager {
     };
   }
 
-  async generateComplianceReport(reportType: 'gdpr' | 'soc2' | 'pci' | 'hipaa' | 'custom' = 'custom'): Promise<any> {
+  async generateComplianceReport(
+    reportType: 'gdpr' | 'soc2' | 'pci' | 'hipaa' | 'custom' = 'custom'
+  ): Promise<any> {
     const period = {
       start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
       end: new Date(),
     };
 
     const [auditReport, gdprReport, complianceCheck] = await Promise.all([
-      this.auditLogger.generateComplianceReport(reportType, period, 'system'),
+      this.generateAuditComplianceReport(reportType, period, 'system'),
       this.gdprManager.generateGDPRReport(period),
       this.performComplianceCheck(),
     ]);
@@ -251,9 +292,9 @@ export class ComplianceManager {
         overallScore: complianceCheck.overallScore,
         status: complianceCheck.status,
         totalFindings: complianceCheck.findings.length,
-        criticalFindings: complianceCheck.findings.filter(f => f.severity === 'high').length,
-        mediumFindings: complianceCheck.findings.filter(f => f.severity === 'medium').length,
-        lowFindings: complianceCheck.findings.filter(f => f.severity === 'low').length,
+        criticalFindings: complianceCheck.findings.filter((f: any) => f.severity === 'high').length,
+        mediumFindings: complianceCheck.findings.filter((f: any) => f.severity === 'medium').length,
+        lowFindings: complianceCheck.findings.filter((f: any) => f.severity === 'low').length,
       },
       audit: auditReport,
       gdpr: gdprReport,
@@ -273,7 +314,7 @@ export const globalComplianceManager = new ComplianceManager();
 // React Hooks for Compliance
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export function useComplianceDashboard() {
   const [complianceData, setComplianceData] = useState<any>(null);
@@ -336,13 +377,14 @@ export function useGDPRData(dataSubjectId: string) {
     const fetchGDPRData = async () => {
       try {
         setLoading(true);
-        const [dataSubject, consentRecords, erasureRequests, portabilityRequests] = await Promise.all([
-          globalComplianceManager.getDataSubject(dataSubjectId),
-          globalComplianceManager.getConsentRecords(dataSubjectId),
-          globalComplianceManager.getErasureRequests(dataSubjectId),
-          globalComplianceManager.getPortabilityRequests(dataSubjectId),
-        ]);
-        
+        const [dataSubject, consentRecords, erasureRequests, portabilityRequests] =
+          await Promise.all([
+            globalComplianceManager.getDataSubject(dataSubjectId),
+            globalComplianceManager.getConsentRecords(dataSubjectId),
+            globalComplianceManager.getErasureRequests(dataSubjectId),
+            globalComplianceManager.getPortabilityRequests(dataSubjectId),
+          ]);
+
         setGdprData({
           dataSubject,
           consentRecords,

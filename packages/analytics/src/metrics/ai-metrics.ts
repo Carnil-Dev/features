@@ -36,10 +36,12 @@ export const CostAnalysisSchema = z.object({
   costByProvider: z.record(z.string(), z.number().nonnegative()),
   costByFeature: z.record(z.string(), z.number().nonnegative()),
   averageCostPerToken: z.number().nonnegative(),
-  costTrend: z.array(z.object({
-    date: z.string(),
-    cost: z.number().nonnegative(),
-  })),
+  costTrend: z.array(
+    z.object({
+      date: z.string(),
+      cost: z.number().nonnegative(),
+    })
+  ),
   period: z.string(),
 });
 
@@ -49,11 +51,13 @@ export const UsagePatternSchema = z.object({
   peakDays: z.array(z.string()),
   averageSessionLength: z.number().nonnegative(),
   averageTokensPerSession: z.number().nonnegative(),
-  mostUsedModels: z.array(z.object({
-    modelId: z.string(),
-    usage: z.number().nonnegative(),
-    cost: z.number().nonnegative(),
-  })),
+  mostUsedModels: z.array(
+    z.object({
+      modelId: z.string(),
+      usage: z.number().nonnegative(),
+      cost: z.number().nonnegative(),
+    })
+  ),
   featureUsage: z.record(z.string(), z.number().nonnegative()),
 });
 
@@ -113,13 +117,15 @@ export class AIMetricsCalculator {
     const periodUsages = this.filterByPeriod(customerUsages, period);
 
     const totalCost = periodUsages.reduce((sum, usage) => sum + usage.cost, 0);
-    
+
     const costByModel = this.groupBy(periodUsages, 'modelId', 'cost');
     const costByProvider = this.groupBy(periodUsages, 'provider', 'cost');
-    const costByFeature = this.groupBy(periodUsages, 'featureId', 'cost');
-    
-    const averageCostPerToken = totalCost / periodUsages.reduce((sum, usage) => sum + usage.totalTokens, 0);
-    
+    // AI usage doesn't have featureId - tracked by model instead
+    const costByFeature: Record<string, number> = {};
+
+    const averageCostPerToken =
+      totalCost / periodUsages.reduce((sum, usage) => sum + usage.totalTokens, 0);
+
     const costTrend = this.calculateCostTrend(periodUsages);
 
     return {
@@ -142,9 +148,10 @@ export class AIMetricsCalculator {
     const peakDays = this.calculatePeakDays(periodUsages);
     const averageSessionLength = this.calculateAverageSessionLength(periodUsages);
     const averageTokensPerSession = this.calculateAverageTokensPerSession(periodUsages);
-    
+
     const mostUsedModels = this.calculateMostUsedModels(periodUsages);
-    const featureUsage = this.groupBy(periodUsages, 'featureId', 'totalTokens');
+    // AI usage doesn't have featureId - tracked by model instead
+    const featureUsage: Record<string, number> = {};
 
     return {
       customerId,
@@ -183,13 +190,13 @@ export class AIMetricsCalculator {
     return usages.filter(usage => usage.timestamp >= startDate);
   }
 
-  private calculateAverageLatency(usages: TokenUsage[]): number {
+  private calculateAverageLatency(_usages: TokenUsage[]): number {
     // This would require latency data from the actual API calls
     // For now, return a mock calculation
     return 1500; // 1.5 seconds average
   }
 
-  private calculateSuccessRate(usages: TokenUsage[]): number {
+  private calculateSuccessRate(_usages: TokenUsage[]): number {
     // This would require success/error data from the actual API calls
     // For now, return a mock calculation
     return 0.95; // 95% success rate
@@ -199,13 +206,17 @@ export class AIMetricsCalculator {
     return 1 - this.calculateSuccessRate(usages);
   }
 
-  private groupBy(usages: TokenUsage[], key: keyof TokenUsage, valueKey: keyof TokenUsage): Record<string, number> {
+  private groupBy(
+    usages: TokenUsage[],
+    key: keyof TokenUsage,
+    valueKey: keyof TokenUsage
+  ): Record<string, number> {
     const grouped: Record<string, number> = {};
-    
+
     usages.forEach(usage => {
       const keyValue = usage[key] as string;
       const value = usage[valueKey] as number;
-      
+
       if (!grouped[keyValue]) {
         grouped[keyValue] = 0;
       }
@@ -217,7 +228,7 @@ export class AIMetricsCalculator {
 
   private calculateCostTrend(usages: TokenUsage[]): Array<{ date: string; cost: number }> {
     const dailyCosts: Record<string, number> = {};
-    
+
     usages.forEach(usage => {
       const date = usage.timestamp.toISOString().split('T')[0];
       if (!dailyCosts[date]) {
@@ -233,7 +244,7 @@ export class AIMetricsCalculator {
 
   private calculatePeakHours(usages: TokenUsage[]): number[] {
     const hourlyUsage: Record<number, number> = {};
-    
+
     usages.forEach(usage => {
       const hour = usage.timestamp.getHours();
       if (!hourlyUsage[hour]) {
@@ -250,7 +261,7 @@ export class AIMetricsCalculator {
 
   private calculatePeakDays(usages: TokenUsage[]): string[] {
     const dailyUsage: Record<string, number> = {};
-    
+
     usages.forEach(usage => {
       const day = usage.timestamp.toLocaleDateString('en-US', { weekday: 'long' });
       if (!dailyUsage[day]) {
@@ -265,7 +276,7 @@ export class AIMetricsCalculator {
       .map(([day]) => day);
   }
 
-  private calculateAverageSessionLength(usages: TokenUsage[]): number {
+  private calculateAverageSessionLength(_usages: TokenUsage[]): number {
     // This would require session data
     // For now, return a mock calculation
     return 30; // 30 minutes average
@@ -273,7 +284,7 @@ export class AIMetricsCalculator {
 
   private calculateAverageTokensPerSession(usages: TokenUsage[]): number {
     const sessionTokens: Record<string, number> = {};
-    
+
     usages.forEach(usage => {
       const sessionId = usage.sessionId || 'default';
       if (!sessionTokens[sessionId]) {
@@ -284,13 +295,15 @@ export class AIMetricsCalculator {
 
     const totalSessions = Object.keys(sessionTokens).length;
     const totalTokens = Object.values(sessionTokens).reduce((sum, tokens) => sum + tokens, 0);
-    
+
     return totalSessions > 0 ? totalTokens / totalSessions : 0;
   }
 
-  private calculateMostUsedModels(usages: TokenUsage[]): Array<{ modelId: string; usage: number; cost: number }> {
+  private calculateMostUsedModels(
+    usages: TokenUsage[]
+  ): Array<{ modelId: string; usage: number; cost: number }> {
     const modelUsage: Record<string, { usage: number; cost: number }> = {};
-    
+
     usages.forEach(usage => {
       if (!modelUsage[usage.modelId]) {
         modelUsage[usage.modelId] = { usage: 0, cost: 0 };
@@ -335,26 +348,26 @@ export function generateAIMetricsDashboard(
   period: string = 'month'
 ): AIMetricsDashboardData {
   const calculator = new AIMetricsCalculator(tokenUsages);
-  
+
   const customerUsages = tokenUsages.filter(usage => usage.customerId === customerId);
   const periodUsages = calculator['filterByPeriod'](customerUsages, period);
-  
+
   const totalTokens = periodUsages.reduce((sum, usage) => sum + usage.totalTokens, 0);
   const totalCost = periodUsages.reduce((sum, usage) => sum + usage.cost, 0);
   const totalRequests = periodUsages.length;
-  
+
   const uniqueModels = [...new Set(periodUsages.map(usage => usage.modelId))];
-  const modelPerformance = uniqueModels.map(modelId => 
+  const modelPerformance = uniqueModels.map(modelId =>
     calculator.calculateModelPerformance(modelId, period)
   );
-  
+
   const costAnalysis = calculator.calculateCostAnalysis(customerId, period);
   const usagePatterns = calculator.calculateUsagePatterns(customerId, period);
-  
+
   // Calculate trends (simplified)
   const trends = {
     tokenGrowth: 15.2, // Mock data
-    costGrowth: 12.8,  // Mock data
+    costGrowth: 12.8, // Mock data
     requestGrowth: 8.5, // Mock data
   };
 
@@ -364,8 +377,11 @@ export function generateAIMetricsDashboard(
       totalCost,
       averageCostPerToken: totalTokens > 0 ? totalCost / totalTokens : 0,
       totalRequests,
-      averageLatency: modelPerformance.reduce((sum, perf) => sum + perf.averageLatency, 0) / modelPerformance.length,
-      successRate: modelPerformance.reduce((sum, perf) => sum + perf.successRate, 0) / modelPerformance.length,
+      averageLatency:
+        modelPerformance.reduce((sum, perf) => sum + perf.averageLatency, 0) /
+        modelPerformance.length,
+      successRate:
+        modelPerformance.reduce((sum, perf) => sum + perf.successRate, 0) / modelPerformance.length,
     },
     modelPerformance,
     costAnalysis,

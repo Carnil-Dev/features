@@ -123,19 +123,12 @@ export class GlobalizationManager {
     }
 
     // Calculate tax
-    const taxCalculation = this.taxManager.calculateTax(
-      subtotal,
-      jurisdiction.id,
-      customerId
-    );
+    const taxCalculation = this.taxManager.calculateTax(subtotal, jurisdiction.id, customerId);
 
     // Calculate payment method fees if provided
     let paymentFees = 0;
     if (paymentMethodId) {
-      const fees = this.paymentMethodManager.calculatePaymentMethodFees(
-        paymentMethodId,
-        subtotal
-      );
+      const fees = this.paymentMethodManager.calculatePaymentMethodFees(paymentMethodId, subtotal);
       paymentFees = fees.total;
     }
 
@@ -181,10 +174,7 @@ export class GlobalizationManager {
       name: method.displayName,
       description: method.description,
       icon: method.icon,
-      fees: this.paymentMethodManager.calculatePaymentMethodFees(
-        method.paymentMethodId,
-        amount
-      ),
+      fees: this.paymentMethodManager.calculatePaymentMethodFees(method.paymentMethodId, amount),
       isPopular: method.isPopular,
       isRecommended: method.isRecommended,
     }));
@@ -201,13 +191,9 @@ export const globalGlobalizationManager = new GlobalizationManager();
 // React Hooks for Globalization
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-export function useCurrencyConversion(
-  amount: number,
-  fromCurrency: string,
-  toCurrency: string
-) {
+export function useCurrencyConversion(amount: number, fromCurrency: string, toCurrency: string) {
   const [conversion, setConversion] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -218,7 +204,7 @@ export function useCurrencyConversion(
     const convert = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const result = await globalGlobalizationManager.convertCurrency(
           amount,
@@ -239,11 +225,7 @@ export function useCurrencyConversion(
   return { conversion, loading, error };
 }
 
-export function useLocalizedPaymentMethods(
-  country: string,
-  currency: string,
-  amount: number
-) {
+export function useLocalizedPaymentMethods(country: string, currency: string, amount: number) {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -254,12 +236,9 @@ export function useLocalizedPaymentMethods(
     const fetchPaymentMethods = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
-        const methods = globalGlobalizationManager.getLocalizedPaymentMethods(
-          country,
-          currency
-        );
+        const methods = globalGlobalizationManager.getLocalizedPaymentMethods(country, currency);
         setPaymentMethods(methods);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch payment methods');
@@ -274,11 +253,7 @@ export function useLocalizedPaymentMethods(
   return { paymentMethods, loading, error };
 }
 
-export function useTaxCalculation(
-  subtotal: number,
-  country: string,
-  customerId?: string
-) {
+export function useTaxCalculation(subtotal: number, country: string, customerId?: string) {
   const [taxCalculation, setTaxCalculation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -289,12 +264,12 @@ export function useTaxCalculation(
     const calculate = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const jurisdiction = globalGlobalizationManager.findJurisdictionByLocation({
           country,
         });
-        
+
         if (!jurisdiction) {
           throw new Error(`No jurisdiction found for country: ${country}`);
         }
@@ -304,7 +279,7 @@ export function useTaxCalculation(
           jurisdiction.id,
           customerId
         );
-        
+
         setTaxCalculation(calculation);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Tax calculation failed');

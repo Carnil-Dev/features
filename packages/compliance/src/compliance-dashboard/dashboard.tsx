@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import { useState, useEffect } from 'react';
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   Info,
   Download,
   RefreshCw,
@@ -11,7 +11,7 @@ import {
   FileText,
   Users,
   Lock,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 // ============================================================================
@@ -26,7 +26,9 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
   const [complianceData, setComplianceData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'gdpr' | 'soc2' | 'audit'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'gdpr' | 'soc2' | 'audit'>(
+    'overview'
+  );
 
   useEffect(() => {
     fetchComplianceData();
@@ -87,7 +89,7 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
           lastAudit: new Date().toISOString(),
         },
       };
-      
+
       setComplianceData(mockData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch compliance data');
@@ -106,9 +108,14 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
       timestamp: new Date().toISOString(),
       data: complianceData,
     };
-    
+
+    // Browser environment check
+    // @ts-ignore - window and document are available in browser
+    if (typeof window === 'undefined') return;
+
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
+    // @ts-ignore - document is available in browser
     const a = document.createElement('a');
     a.href = url;
     a.download = `compliance-report-${new Date().toISOString().split('T')[0]}.json`;
@@ -152,7 +159,7 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
           <h1 className="text-2xl font-bold text-gray-900">Compliance Dashboard</h1>
           <p className="text-gray-600">Monitor and manage compliance across all regulations</p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
             onClick={handleRefresh}
@@ -161,7 +168,7 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
           >
             <RefreshCw className="w-5 h-5" />
           </button>
-          
+
           <button
             onClick={handleExportReport}
             className="p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100"
@@ -169,7 +176,7 @@ export function ComplianceDashboard({ className }: ComplianceDashboardProps) {
           >
             <Download className="w-5 h-5" />
           </button>
-          
+
           <button
             className="p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100"
             title="Settings"
@@ -222,17 +229,23 @@ function OverviewTab({ data }: { data: any }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLIANT': return 'text-green-600 bg-green-100';
-      case 'NON_COMPLIANT': return 'text-red-600 bg-red-100';
-      default: return 'text-yellow-600 bg-yellow-100';
+      case 'COMPLIANT':
+        return 'text-green-600 bg-green-100';
+      case 'NON_COMPLIANT':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-yellow-600 bg-yellow-100';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'COMPLIANT': return CheckCircle;
-      case 'NON_COMPLIANT': return XCircle;
-      default: return AlertTriangle;
+      case 'COMPLIANT':
+        return CheckCircle;
+      case 'NON_COMPLIANT':
+        return XCircle;
+      default:
+        return AlertTriangle;
     }
   };
 
@@ -244,12 +257,14 @@ function OverviewTab({ data }: { data: any }) {
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Overall Compliance Status</h2>
-          <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(data.status)}`}>
+          <div
+            className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(data.status)}`}
+          >
             <StatusIcon className="w-4 h-4" />
             <span>{data.status}</span>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-3xl font-bold text-blue-600">{data.overallScore}%</div>
@@ -277,7 +292,7 @@ function OverviewTab({ data }: { data: any }) {
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -287,7 +302,7 @@ function OverviewTab({ data }: { data: any }) {
             <XCircle className="w-8 h-8 text-red-600" />
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -297,7 +312,7 @@ function OverviewTab({ data }: { data: any }) {
             <AlertTriangle className="w-8 h-8 text-yellow-600" />
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -320,10 +335,12 @@ function GDPRTab({ data }: { data: any }) {
       {/* GDPR Overview */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">GDPR Compliance</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{data.dataSubjects.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {data.dataSubjects.toLocaleString()}
+            </div>
             <div className="text-sm text-gray-600">Data Subjects</div>
           </div>
           <div className="text-center">
@@ -346,23 +363,34 @@ function GDPRTab({ data }: { data: any }) {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Findings</h3>
         <div className="space-y-3">
           {data.findings.map((finding: any) => (
-            <div key={finding.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+            <div
+              key={finding.id}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+            >
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${
-                  finding.severity === 'high' ? 'bg-red-500' :
-                  finding.severity === 'medium' ? 'bg-yellow-500' :
-                  'bg-blue-500'
-                }`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    finding.severity === 'high'
+                      ? 'bg-red-500'
+                      : finding.severity === 'medium'
+                        ? 'bg-yellow-500'
+                        : 'bg-blue-500'
+                  }`}
+                />
                 <div>
                   <div className="font-medium text-gray-900">{finding.description}</div>
                   <div className="text-sm text-gray-600">Severity: {finding.severity}</div>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                finding.status === 'open' ? 'bg-red-100 text-red-800' :
-                finding.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                'bg-yellow-100 text-yellow-800'
-              }`}>
+              <div
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  finding.status === 'open'
+                    ? 'bg-red-100 text-red-800'
+                    : finding.status === 'resolved'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                }`}
+              >
                 {finding.status}
               </div>
             </div>
@@ -381,7 +409,7 @@ function SOC2Tab({ data }: { data: any }) {
       {/* SOC2 Overview */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">SOC2 Compliance</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">{data.securityScore}%</div>
@@ -411,23 +439,34 @@ function SOC2Tab({ data }: { data: any }) {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">SOC2 Findings</h3>
         <div className="space-y-3">
           {data.findings.map((finding: any) => (
-            <div key={finding.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+            <div
+              key={finding.id}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+            >
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${
-                  finding.severity === 'high' ? 'bg-red-500' :
-                  finding.severity === 'medium' ? 'bg-yellow-500' :
-                  'bg-blue-500'
-                }`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    finding.severity === 'high'
+                      ? 'bg-red-500'
+                      : finding.severity === 'medium'
+                        ? 'bg-yellow-500'
+                        : 'bg-blue-500'
+                  }`}
+                />
                 <div>
                   <div className="font-medium text-gray-900">{finding.description}</div>
                   <div className="text-sm text-gray-600">Type: {finding.type}</div>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                finding.status === 'open' ? 'bg-red-100 text-red-800' :
-                finding.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                'bg-yellow-100 text-yellow-800'
-              }`}>
+              <div
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  finding.status === 'open'
+                    ? 'bg-red-100 text-red-800'
+                    : finding.status === 'resolved'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                }`}
+              >
                 {finding.status}
               </div>
             </div>
@@ -446,10 +485,12 @@ function AuditTab({ data }: { data: any }) {
       {/* Audit Overview */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Audit Trail</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{data.totalEvents.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {data.totalEvents.toLocaleString()}
+            </div>
             <div className="text-sm text-gray-600">Total Events</div>
           </div>
           <div className="text-center">
@@ -481,7 +522,7 @@ function AuditTab({ data }: { data: any }) {
             </div>
             <div className="text-sm text-gray-500">2 minutes ago</div>
           </div>
-          
+
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
             <div className="flex items-center space-x-3">
               <Lock className="w-5 h-5 text-green-600" />

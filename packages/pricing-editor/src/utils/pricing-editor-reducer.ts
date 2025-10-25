@@ -1,10 +1,8 @@
-import { 
-  PricingEditorState, 
-  PricingEditorAction, 
-  PricingPlan, 
-  PricingTier,
-  ABTest,
-  GrandfatheringRule
+import {
+  PricingEditorState,
+  PricingEditorAction,
+  PricingPlan,
+  PricingTier
 } from '../types/pricing';
 
 // ============================================================================
@@ -251,6 +249,7 @@ export function createEmptyTier(): PricingTier {
     interval: 'month',
     intervalCount: 1,
     features: [],
+    isPopular: false,
     isActive: true,
     sortOrder: 0,
   };
