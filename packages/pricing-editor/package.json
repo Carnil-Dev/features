@@ -24,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@carnil/core": "workspace:*",
+    "@carnil/core": "^0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dnd": "^16.0.1",
@@ -34,6 +34,33 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.0.0"
+  },
+  "keywords": [
+    "payments",
+    "pricing",
+    "editor",
+    "react",
+    "sdk",
+    "typescript",
+    "nocode"
+  ],
+  "author": {
+    "name": "Carnil Team",
+    "email": "hello@carnil.com",
+    "url": "https://carnil.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carnil/carnil-sdk.git",
+    "directory": "packages/pricing-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/carnil/carnil-sdk/issues"
+  },
+  "homepage": "https://carnil.com",
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

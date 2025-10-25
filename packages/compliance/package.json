@@ -27,12 +27,38 @@
     "compliance:gdpr": "node dist/ci-scripts/gdpr-compliance.js"
   },
   "dependencies": {
-    "@carnil/core": "workspace:*",
+    "@carnil/core": "^0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "crypto": "^1.0.1",
     "jsonwebtoken": "^9.0.2",
     "bcrypt": "^5.1.1"
+  },
+  "keywords": [
+    "payments",
+    "compliance",
+    "gdpr",
+    "soc2",
+    "sdk",
+    "typescript"
+  ],
+  "author": {
+    "name": "Carnil Team",
+    "email": "hello@carnil.com",
+    "url": "https://carnil.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carnil/carnil-sdk.git",
+    "directory": "packages/compliance"
+  },
+  "bugs": {
+    "url": "https://github.com/carnil/carnil-sdk/issues"
+  },
+  "homepage": "https://carnil.com",
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
