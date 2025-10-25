@@ -1,6 +1,6 @@
 {
   "name": "@carnil/compliance",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SOC2/GDPR/Compliance Tooling for Carnil Payments SDK",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -27,7 +27,7 @@
     "compliance:gdpr": "node dist/ci-scripts/gdpr-compliance.js"
   },
   "dependencies": {
-    "@carnil/core": "^0.1.0",
+    "@carnil/core": "^0.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "crypto": "^1.0.1",
