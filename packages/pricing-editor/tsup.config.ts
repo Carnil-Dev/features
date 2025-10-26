@@ -1,0 +1,27 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['cjs', 'esm'],
+  dts: true,
+  splitting: false,
+  sourcemap: true,
+  clean: true,
+  external: [
+    '@carnil/core',
+    'react',
+    'react-dom',
+    'react-dnd',
+    'react-dnd-html5-backend',
+    'framer-motion',
+    'lucide-react',
+    'clsx',
+    'tailwind-merge',
+    'zod',
+  ],
+  treeshake: true,
+  minify: false,
+  output: {
+    exports: 'named',
+  },
+});
