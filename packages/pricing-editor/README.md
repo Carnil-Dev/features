@@ -30,45 +30,45 @@ npm install react react-dom framer-motion lucide-react react-dnd react-dnd-html5
 ## Quick Start
 
 ```tsx
-import { 
-  PricingEditor, 
+import {
+  PricingEditor,
   PricingCalculator,
   ABTestPanel,
-  GrandfatheringPanel 
-} from '@carnil/pricing-editor';
+  GrandfatheringPanel,
+} from "@carnil/pricing-editor";
 
 function PricingPage() {
   const [pricing, setPricing] = useState({
     tiers: [
       {
-        id: 'basic',
-        name: 'Basic',
+        id: "basic",
+        name: "Basic",
         price: 9,
-        currency: 'USD',
-        interval: 'month',
-        features: ['Feature 1', 'Feature 2']
+        currency: "USD",
+        interval: "month",
+        features: ["Feature 1", "Feature 2"],
       },
       {
-        id: 'pro',
-        name: 'Pro',
+        id: "pro",
+        name: "Pro",
         price: 29,
-        currency: 'USD',
-        interval: 'month',
-        features: ['All Basic features', 'Feature 3', 'Feature 4']
-      }
-    ]
+        currency: "USD",
+        interval: "month",
+        features: ["All Basic features", "Feature 3", "Feature 4"],
+      },
+    ],
   });
 
   return (
     <div>
-      <PricingEditor 
+      <PricingEditor
         pricing={pricing}
         onChange={setPricing}
         currency="USD"
         showPreview={true}
       />
-      
-      <PricingCalculator 
+
+      <PricingCalculator
         pricing={pricing}
         onCalculate={(calculation) => console.log(calculation)}
       />
@@ -143,7 +143,7 @@ interface PricingPlan {
   description?: string;
   tiers: PricingTier[];
   currency: string;
-  billingInterval: 'month' | 'year';
+  billingInterval: "month" | "year";
   features: PricingFeature[];
   metadata?: Record<string, any>;
 }
@@ -158,7 +158,7 @@ interface PricingTier {
   description?: string;
   price: number;
   currency: string;
-  interval: 'month' | 'year';
+  interval: "month" | "year";
   features: string[];
   limits?: {
     maxUsers?: number;
@@ -178,7 +178,7 @@ interface PricingFeature {
   id: string;
   name: string;
   description?: string;
-  type: 'boolean' | 'numeric' | 'text';
+  type: "boolean" | "numeric" | "text";
   value?: any;
   includedInTiers: string[];
   metadata?: Record<string, any>;
@@ -192,7 +192,7 @@ interface PricingTemplate {
   id: string;
   name: string;
   description: string;
-  category: 'saas' | 'ecommerce' | 'marketplace' | 'api' | 'custom';
+  category: "saas" | "ecommerce" | "marketplace" | "api" | "custom";
   pricing: PricingPlan;
   preview?: string;
   tags?: string[];
@@ -206,7 +206,7 @@ interface ABTest {
   id: string;
   name: string;
   description?: string;
-  status: 'draft' | 'running' | 'paused' | 'completed';
+  status: "draft" | "running" | "paused" | "completed";
   variants: {
     control: PricingPlan;
     variant: PricingPlan;
@@ -240,7 +240,7 @@ interface GrandfatheringRule {
   pricing: PricingPlan;
   effectiveDate: Date;
   expirationDate?: Date;
-  status: 'active' | 'inactive' | 'expired';
+  status: "active" | "inactive" | "expired";
 }
 ```
 
@@ -251,16 +251,16 @@ interface GrandfatheringRule {
 The main pricing editor component with drag-and-drop functionality.
 
 ```tsx
-import { PricingEditor } from '@carnil/pricing-editor';
+import { PricingEditor } from "@carnil/pricing-editor";
 
 function MyPricingEditor() {
   const [pricing, setPricing] = useState<PricingPlan>({
-    id: 'my-plan',
-    name: 'My Pricing Plan',
+    id: "my-plan",
+    name: "My Pricing Plan",
     tiers: [],
-    currency: 'USD',
-    billingInterval: 'month',
-    features: []
+    currency: "USD",
+    billingInterval: "month",
+    features: [],
   });
 
   return (
@@ -273,14 +273,14 @@ function MyPricingEditor() {
       enableGrandfathering={true}
       templates={[
         {
-          id: 'saas-starter',
-          name: 'SaaS Starter',
-          description: 'Perfect for small teams',
-          category: 'saas',
+          id: "saas-starter",
+          name: "SaaS Starter",
+          description: "Perfect for small teams",
+          category: "saas",
           pricing: {
             // ... template pricing
-          }
-        }
+          },
+        },
       ]}
       onTemplateSelect={(template) => {
         setPricing(template.pricing);
@@ -295,13 +295,13 @@ function MyPricingEditor() {
 Real-time pricing calculator with usage-based calculations.
 
 ```tsx
-import { PricingCalculator } from '@carnil/pricing-editor';
+import { PricingCalculator } from "@carnil/pricing-editor";
 
 function MyPricingCalculator() {
   const [pricing, setPricing] = useState<PricingPlan>(/* ... */);
 
   const handleCalculate = (calculation: PricingCalculation) => {
-    console.log('Pricing calculation:', calculation);
+    console.log("Pricing calculation:", calculation);
   };
 
   return (
@@ -311,7 +311,7 @@ function MyPricingCalculator() {
       defaultUsage={{
         users: 10,
         storage: 1000, // GB
-        apiCalls: 10000
+        apiCalls: 10000,
       }}
       showBreakdown={true}
       currency="USD"
@@ -325,7 +325,7 @@ function MyPricingCalculator() {
 A/B testing management panel for pricing strategies.
 
 ```tsx
-import { ABTestPanel } from '@carnil/pricing-editor';
+import { ABTestPanel } from "@carnil/pricing-editor";
 
 function MyABTestPanel() {
   const [pricing, setPricing] = useState<PricingPlan>(/* ... */);
@@ -336,11 +336,11 @@ function MyABTestPanel() {
   };
 
   const handleTestUpdate = (test: ABTest) => {
-    setActiveTests(activeTests.map(t => t.id === test.id ? test : t));
+    setActiveTests(activeTests.map((t) => (t.id === test.id ? test : t)));
   };
 
   const handleTestDelete = (testId: string) => {
-    setActiveTests(activeTests.filter(t => t.id !== testId));
+    setActiveTests(activeTests.filter((t) => t.id !== testId));
   };
 
   return (
@@ -361,22 +361,26 @@ function MyABTestPanel() {
 Grandfathering rules management for existing customers.
 
 ```tsx
-import { GrandfatheringPanel } from '@carnil/pricing-editor';
+import { GrandfatheringPanel } from "@carnil/pricing-editor";
 
 function MyGrandfatheringPanel() {
   const [pricing, setPricing] = useState<PricingPlan>(/* ... */);
-  const [grandfatheringRules, setGrandfatheringRules] = useState<GrandfatheringRule[]>([]);
+  const [grandfatheringRules, setGrandfatheringRules] = useState<
+    GrandfatheringRule[]
+  >([]);
 
   const handleRuleCreate = (rule: GrandfatheringRule) => {
     setGrandfatheringRules([...grandfatheringRules, rule]);
   };
 
   const handleRuleUpdate = (rule: GrandfatheringRule) => {
-    setGrandfatheringRules(grandfatheringRules.map(r => r.id === rule.id ? rule : r));
+    setGrandfatheringRules(
+      grandfatheringRules.map((r) => (r.id === rule.id ? rule : r))
+    );
   };
 
   const handleRuleDelete = (ruleId: string) => {
-    setGrandfatheringRules(grandfatheringRules.filter(r => r.id !== ruleId));
+    setGrandfatheringRules(grandfatheringRules.filter((r) => r.id !== ruleId));
   };
 
   return (
@@ -397,49 +401,49 @@ function MyGrandfatheringPanel() {
 ### Pre-built Templates
 
 ```typescript
-import { PricingTemplate } from '@carnil/pricing-editor';
+import { PricingTemplate } from "@carnil/pricing-editor";
 
 const saasTemplates: PricingTemplate[] = [
   {
-    id: 'saas-starter',
-    name: 'SaaS Starter',
-    description: 'Perfect for small teams getting started',
-    category: 'saas',
+    id: "saas-starter",
+    name: "SaaS Starter",
+    description: "Perfect for small teams getting started",
+    category: "saas",
     pricing: {
-      id: 'starter',
-      name: 'Starter Plan',
+      id: "starter",
+      name: "Starter Plan",
       tiers: [
         {
-          id: 'basic',
-          name: 'Basic',
+          id: "basic",
+          name: "Basic",
           price: 9,
-          currency: 'USD',
-          interval: 'month',
-          features: ['Up to 5 users', '10GB storage', 'Basic support']
+          currency: "USD",
+          interval: "month",
+          features: ["Up to 5 users", "10GB storage", "Basic support"],
         },
         {
-          id: 'pro',
-          name: 'Pro',
+          id: "pro",
+          name: "Pro",
           price: 29,
-          currency: 'USD',
-          interval: 'month',
-          features: ['Up to 25 users', '100GB storage', 'Priority support'],
-          popular: true
+          currency: "USD",
+          interval: "month",
+          features: ["Up to 25 users", "100GB storage", "Priority support"],
+          popular: true,
         },
         {
-          id: 'enterprise',
-          name: 'Enterprise',
+          id: "enterprise",
+          name: "Enterprise",
           price: 99,
-          currency: 'USD',
-          interval: 'month',
-          features: ['Unlimited users', 'Unlimited storage', '24/7 support']
-        }
+          currency: "USD",
+          interval: "month",
+          features: ["Unlimited users", "Unlimited storage", "24/7 support"],
+        },
       ],
-      currency: 'USD',
-      billingInterval: 'month',
-      features: []
-    }
-  }
+      currency: "USD",
+      billingInterval: "month",
+      features: [],
+    },
+  },
 ];
 ```
 
@@ -448,41 +452,55 @@ const saasTemplates: PricingTemplate[] = [
 ### Creating A/B Tests
 
 ```typescript
-import { ABTest } from '@carnil/pricing-editor';
+import { ABTest } from "@carnil/pricing-editor";
 
 const abTest: ABTest = {
-  id: 'pricing-test-1',
-  name: 'Pricing Page A/B Test',
-  description: 'Testing different pricing strategies',
-  status: 'draft',
+  id: "pricing-test-1",
+  name: "Pricing Page A/B Test",
+  description: "Testing different pricing strategies",
+  status: "draft",
   variants: {
     control: {
       // Original pricing
-      id: 'control',
-      name: 'Control',
+      id: "control",
+      name: "Control",
       tiers: [
-        { id: 'basic', name: 'Basic', price: 9, currency: 'USD', interval: 'month', features: [] }
+        {
+          id: "basic",
+          name: "Basic",
+          price: 9,
+          currency: "USD",
+          interval: "month",
+          features: [],
+        },
       ],
-      currency: 'USD',
-      billingInterval: 'month',
-      features: []
+      currency: "USD",
+      billingInterval: "month",
+      features: [],
     },
     variant: {
       // New pricing
-      id: 'variant',
-      name: 'Variant',
+      id: "variant",
+      name: "Variant",
       tiers: [
-        { id: 'basic', name: 'Basic', price: 7, currency: 'USD', interval: 'month', features: [] }
+        {
+          id: "basic",
+          name: "Basic",
+          price: 7,
+          currency: "USD",
+          interval: "month",
+          features: [],
+        },
       ],
-      currency: 'USD',
-      billingInterval: 'month',
-      features: []
-    }
+      currency: "USD",
+      billingInterval: "month",
+      features: [],
+    },
   },
   trafficSplit: 50, // 50% traffic to variant
   startDate: new Date(),
   endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-  metrics: {}
+  metrics: {},
 };
 ```
 
@@ -491,37 +509,37 @@ const abTest: ABTest = {
 ### Creating Grandfathering Rules
 
 ```typescript
-import { GrandfatheringRule } from '@carnil/pricing-editor';
+import { GrandfatheringRule } from "@carnil/pricing-editor";
 
 const grandfatheringRule: GrandfatheringRule = {
-  id: 'legacy-customers',
-  name: 'Legacy Customer Pricing',
-  description: 'Special pricing for customers who signed up before 2024',
+  id: "legacy-customers",
+  name: "Legacy Customer Pricing",
+  description: "Special pricing for customers who signed up before 2024",
   conditions: {
     signupDate: {
-      before: new Date('2024-01-01')
+      before: new Date("2024-01-01"),
     },
-    currentPlan: 'legacy-plan'
+    currentPlan: "legacy-plan",
   },
   pricing: {
-    id: 'legacy-pricing',
-    name: 'Legacy Pricing',
+    id: "legacy-pricing",
+    name: "Legacy Pricing",
     tiers: [
       {
-        id: 'legacy-basic',
-        name: 'Legacy Basic',
+        id: "legacy-basic",
+        name: "Legacy Basic",
         price: 5, // Reduced price for legacy customers
-        currency: 'USD',
-        interval: 'month',
-        features: ['All basic features', 'Legacy support']
-      }
+        currency: "USD",
+        interval: "month",
+        features: ["All basic features", "Legacy support"],
+      },
     ],
-    currency: 'USD',
-    billingInterval: 'month',
-    features: []
+    currency: "USD",
+    billingInterval: "month",
+    features: [],
   },
   effectiveDate: new Date(),
-  status: 'active'
+  status: "active",
 };
 ```
 

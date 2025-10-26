@@ -24,48 +24,48 @@ npm install @carnil/webhooks
 ## Quick Start
 
 ```typescript
-import { EventBus, WebhookManager } from '@carnil/webhooks';
+import { EventBus, WebhookManager } from "@carnil/webhooks";
 
 // Initialize event bus
 const eventBus = new EventBus({
   redis: {
-    host: 'localhost',
-    port: 6379
+    host: "localhost",
+    port: 6379,
   },
   retryPolicy: {
     maxRetries: 3,
-    backoffMultiplier: 2
-  }
+    backoffMultiplier: 2,
+  },
 });
 
 // Initialize webhook manager
 const webhookManager = new WebhookManager({
   eventBus,
-  webhookSecret: 'your_webhook_secret'
+  webhookSecret: "your_webhook_secret",
 });
 
 // Register event handlers
-eventBus.on('payment.succeeded', async (event) => {
-  console.log('Payment succeeded:', event.data);
+eventBus.on("payment.succeeded", async (event) => {
+  console.log("Payment succeeded:", event.data);
 });
 
-eventBus.on('payment.failed', async (event) => {
-  console.log('Payment failed:', event.data);
+eventBus.on("payment.failed", async (event) => {
+  console.log("Payment failed:", event.data);
 });
 
 // Publish events
-await eventBus.publish('payment.succeeded', {
-  paymentId: 'pi_123',
+await eventBus.publish("payment.succeeded", {
+  paymentId: "pi_123",
   amount: 2000,
-  currency: 'usd',
-  customerId: 'cus_123'
+  currency: "usd",
+  customerId: "cus_123",
 });
 
 // Register webhook endpoints
 await webhookManager.registerEndpoint({
-  url: 'https://your-app.com/webhooks',
-  events: ['payment.succeeded', 'payment.failed'],
-  secret: 'your_endpoint_secret'
+  url: "https://your-app.com/webhooks",
+  events: ["payment.succeeded", "payment.failed"],
+  secret: "your_endpoint_secret",
 });
 ```
 
@@ -76,24 +76,28 @@ await webhookManager.registerEndpoint({
 ```typescript
 class EventBus {
   constructor(config: EventBusConfig);
-  
+
   // Event publishing
-  publish(eventType: string, data: any, options?: PublishOptions): Promise<void>;
+  publish(
+    eventType: string,
+    data: any,
+    options?: PublishOptions
+  ): Promise<void>;
   publishBatch(events: Event[]): Promise<void>;
-  
+
   // Event subscription
   on(eventType: string, handler: EventHandler): void;
   off(eventType: string, handler: EventHandler): void;
   once(eventType: string, handler: EventHandler): void;
-  
+
   // Event querying
   getEvents(filters: EventFilters): Promise<Event[]>;
   getEventById(eventId: string): Promise<Event | null>;
-  
+
   // Event management
   subscribe(pattern: string, handler: EventHandler): void;
   unsubscribe(pattern: string, handler: EventHandler): void;
-  
+
   // Health and monitoring
   healthCheck(): Promise<boolean>;
   getMetrics(): Promise<EventBusMetrics>;
@@ -105,28 +109,45 @@ class EventBus {
 ```typescript
 class WebhookManager {
   constructor(config: WebhookManagerConfig);
-  
+
   // Webhook registration
   registerEndpoint(endpoint: WebhookEndpoint): Promise<void>;
   unregisterEndpoint(endpointId: string): Promise<void>;
-  updateEndpoint(endpointId: string, updates: Partial<WebhookEndpoint>): Promise<void>;
-  
+  updateEndpoint(
+    endpointId: string,
+    updates: Partial<WebhookEndpoint>
+  ): Promise<void>;
+
   // Webhook delivery
   deliverWebhook(endpointId: string, event: Event): Promise<WebhookDelivery>;
-  deliverWebhookBatch(endpointId: string, events: Event[]): Promise<WebhookDelivery[]>;
-  
+  deliverWebhookBatch(
+    endpointId: string,
+    events: Event[]
+  ): Promise<WebhookDelivery[]>;
+
   // Webhook verification
-  verifyWebhook(payload: string, signature: string, secret: string): Promise<boolean>;
-  parseWebhook(payload: string, signature: string, secret: string): Promise<Event>;
-  
+  verifyWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<boolean>;
+  parseWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<Event>;
+
   // Webhook management
   getEndpoints(): Promise<WebhookEndpoint[]>;
   getEndpoint(endpointId: string): Promise<WebhookEndpoint | null>;
   getDeliveryHistory(endpointId: string): Promise<WebhookDelivery[]>;
-  
+
   // Webhook testing
   testEndpoint(endpointId: string): Promise<WebhookTestResult>;
-  sendTestWebhook(endpointId: string, eventType: string): Promise<WebhookDelivery>;
+  sendTestWebhook(
+    endpointId: string,
+    eventType: string
+  ): Promise<WebhookDelivery>;
 }
 ```
 
@@ -205,7 +226,7 @@ interface WebhookDelivery {
   id: string;
   endpointId: string;
   eventId: string;
-  status: 'pending' | 'delivered' | 'failed' | 'retrying';
+  status: "pending" | "delivered" | "failed" | "retrying";
   attempts: number;
   lastAttempt?: Date;
   nextRetry?: Date;
@@ -224,33 +245,33 @@ interface WebhookDelivery {
 ### Basic Event Publishing
 
 ```typescript
-import { EventBus } from '@carnil/webhooks';
+import { EventBus } from "@carnil/webhooks";
 
 const eventBus = new EventBus({
   redis: {
-    host: 'localhost',
-    port: 6379
-  }
+    host: "localhost",
+    port: 6379,
+  },
 });
 
 // Publish a single event
-await eventBus.publish('payment.succeeded', {
-  paymentId: 'pi_123',
+await eventBus.publish("payment.succeeded", {
+  paymentId: "pi_123",
   amount: 2000,
-  currency: 'usd',
-  customerId: 'cus_123'
+  currency: "usd",
+  customerId: "cus_123",
 });
 
 // Publish multiple events
 await eventBus.publishBatch([
   {
-    type: 'payment.succeeded',
-    data: { paymentId: 'pi_123', amount: 2000 }
+    type: "payment.succeeded",
+    data: { paymentId: "pi_123", amount: 2000 },
   },
   {
-    type: 'invoice.created',
-    data: { invoiceId: 'in_123', customerId: 'cus_123' }
-  }
+    type: "invoice.created",
+    data: { invoiceId: "in_123", customerId: "cus_123" },
+  },
 ]);
 ```
 
@@ -258,26 +279,26 @@ await eventBus.publishBatch([
 
 ```typescript
 // Subscribe to specific events
-eventBus.on('payment.succeeded', async (event) => {
-  console.log('Payment succeeded:', event.data);
+eventBus.on("payment.succeeded", async (event) => {
+  console.log("Payment succeeded:", event.data);
   // Send confirmation email
   await sendConfirmationEmail(event.data.customerId);
 });
 
-eventBus.on('payment.failed', async (event) => {
-  console.log('Payment failed:', event.data);
+eventBus.on("payment.failed", async (event) => {
+  console.log("Payment failed:", event.data);
   // Send failure notification
   await sendFailureNotification(event.data.customerId);
 });
 
 // Subscribe to multiple events with pattern matching
-eventBus.subscribe('payment.*', async (event) => {
-  console.log('Payment event:', event.type, event.data);
+eventBus.subscribe("payment.*", async (event) => {
+  console.log("Payment event:", event.type, event.data);
 });
 
 // One-time subscription
-eventBus.once('subscription.created', async (event) => {
-  console.log('First subscription created:', event.data);
+eventBus.once("subscription.created", async (event) => {
+  console.log("First subscription created:", event.data);
 });
 ```
 
@@ -286,16 +307,16 @@ eventBus.once('subscription.created', async (event) => {
 ```typescript
 // Get events with filters
 const events = await eventBus.getEvents({
-  type: 'payment.succeeded',
-  startDate: new Date('2024-01-01'),
-  endDate: new Date('2024-01-31'),
-  limit: 100
+  type: "payment.succeeded",
+  startDate: new Date("2024-01-01"),
+  endDate: new Date("2024-01-31"),
+  limit: 100,
 });
 
 // Get specific event
-const event = await eventBus.getEventById('evt_123');
+const event = await eventBus.getEventById("evt_123");
 if (event) {
-  console.log('Event found:', event);
+  console.log("Event found:", event);
 }
 ```
 
@@ -304,28 +325,28 @@ if (event) {
 ### Webhook Registration
 
 ```typescript
-import { WebhookManager } from '@carnil/webhooks';
+import { WebhookManager } from "@carnil/webhooks";
 
 const webhookManager = new WebhookManager({
   eventBus,
-  webhookSecret: 'your_webhook_secret'
+  webhookSecret: "your_webhook_secret",
 });
 
 // Register webhook endpoint
 await webhookManager.registerEndpoint({
-  id: 'my-webhook',
-  url: 'https://your-app.com/webhooks',
-  events: ['payment.succeeded', 'payment.failed', 'subscription.created'],
-  secret: 'your_endpoint_secret',
+  id: "my-webhook",
+  url: "https://your-app.com/webhooks",
+  events: ["payment.succeeded", "payment.failed", "subscription.created"],
+  secret: "your_endpoint_secret",
   enabled: true,
   timeout: 30000, // 30 seconds
   retryPolicy: {
     maxRetries: 3,
-    backoffMultiplier: 2
+    backoffMultiplier: 2,
   },
   headers: {
-    'User-Agent': 'MyApp/1.0'
-  }
+    "User-Agent": "MyApp/1.0",
+  },
 });
 ```
 
@@ -333,12 +354,15 @@ await webhookManager.registerEndpoint({
 
 ```typescript
 // Deliver webhook manually
-const delivery = await webhookManager.deliverWebhook('my-webhook', event);
-console.log('Delivery status:', delivery.status);
+const delivery = await webhookManager.deliverWebhook("my-webhook", event);
+console.log("Delivery status:", delivery.status);
 
 // Deliver multiple webhooks
-const deliveries = await webhookManager.deliverWebhookBatch('my-webhook', events);
-console.log('Deliveries:', deliveries);
+const deliveries = await webhookManager.deliverWebhookBatch(
+  "my-webhook",
+  events
+);
+console.log("Deliveries:", deliveries);
 ```
 
 ### Webhook Verification
@@ -347,12 +371,12 @@ console.log('Deliveries:', deliveries);
 // Verify webhook signature
 const isValid = await webhookManager.verifyWebhook(payload, signature, secret);
 if (isValid) {
-  console.log('Webhook signature is valid');
+  console.log("Webhook signature is valid");
 }
 
 // Parse webhook payload
 const event = await webhookManager.parseWebhook(payload, signature, secret);
-console.log('Parsed event:', event);
+console.log("Parsed event:", event);
 ```
 
 ## Webhook Endpoints
@@ -360,45 +384,53 @@ console.log('Parsed event:', event);
 ### Express.js Integration
 
 ```typescript
-import express from 'express';
-import { WebhookManager } from '@carnil/webhooks';
+import express from "express";
+import { WebhookManager } from "@carnil/webhooks";
 
 const app = express();
 const webhookManager = new WebhookManager({
   eventBus,
-  webhookSecret: 'your_webhook_secret'
+  webhookSecret: "your_webhook_secret",
 });
 
-app.post('/webhooks', async (req, res) => {
+app.post("/webhooks", async (req, res) => {
   try {
-    const signature = req.headers['x-webhook-signature'] as string;
+    const signature = req.headers["x-webhook-signature"] as string;
     const payload = JSON.stringify(req.body);
-    
+
     // Verify webhook
-    const isValid = await webhookManager.verifyWebhook(payload, signature, 'your_endpoint_secret');
+    const isValid = await webhookManager.verifyWebhook(
+      payload,
+      signature,
+      "your_endpoint_secret"
+    );
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid signature' });
+      return res.status(401).json({ error: "Invalid signature" });
     }
-    
+
     // Parse event
-    const event = await webhookManager.parseWebhook(payload, signature, 'your_endpoint_secret');
-    
+    const event = await webhookManager.parseWebhook(
+      payload,
+      signature,
+      "your_endpoint_secret"
+    );
+
     // Handle event
     switch (event.type) {
-      case 'payment.succeeded':
+      case "payment.succeeded":
         await handlePaymentSucceeded(event.data);
         break;
-      case 'payment.failed':
+      case "payment.failed":
         await handlePaymentFailed(event.data);
         break;
       default:
-        console.log('Unhandled event type:', event.type);
+        console.log("Unhandled event type:", event.type);
     }
-    
+
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 ```
@@ -407,37 +439,48 @@ app.post('/webhooks', async (req, res) => {
 
 ```typescript
 // pages/api/webhooks.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import { WebhookManager } from '@carnil/webhooks';
+import { NextApiRequest, NextApiResponse } from "next";
+import { WebhookManager } from "@carnil/webhooks";
 
 const webhookManager = new WebhookManager({
   eventBus,
-  webhookSecret: process.env.WEBHOOK_SECRET!
+  webhookSecret: process.env.WEBHOOK_SECRET!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const signature = req.headers['x-webhook-signature'] as string;
+    const signature = req.headers["x-webhook-signature"] as string;
     const payload = JSON.stringify(req.body);
-    
+
     // Verify webhook
-    const isValid = await webhookManager.verifyWebhook(payload, signature, process.env.ENDPOINT_SECRET!);
+    const isValid = await webhookManager.verifyWebhook(
+      payload,
+      signature,
+      process.env.ENDPOINT_SECRET!
+    );
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid signature' });
+      return res.status(401).json({ error: "Invalid signature" });
     }
-    
+
     // Parse and handle event
-    const event = await webhookManager.parseWebhook(payload, signature, process.env.ENDPOINT_SECRET!);
+    const event = await webhookManager.parseWebhook(
+      payload,
+      signature,
+      process.env.ENDPOINT_SECRET!
+    );
     await handleWebhookEvent(event);
-    
+
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 ```
@@ -553,23 +596,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 ```typescript
 // Test webhook endpoint
-const testResult = await webhookManager.testEndpoint('my-webhook');
-console.log('Test result:', testResult);
+const testResult = await webhookManager.testEndpoint("my-webhook");
+console.log("Test result:", testResult);
 
 // Send test webhook
-const testDelivery = await webhookManager.sendTestWebhook('my-webhook', 'payment.succeeded');
-console.log('Test delivery:', testDelivery);
+const testDelivery = await webhookManager.sendTestWebhook(
+  "my-webhook",
+  "payment.succeeded"
+);
+console.log("Test delivery:", testDelivery);
 ```
 
 ### Event Testing
 
 ```typescript
 // Test event publishing
-await eventBus.publish('test.event', { message: 'Hello World' });
+await eventBus.publish("test.event", { message: "Hello World" });
 
 // Test event subscription
-eventBus.on('test.event', (event) => {
-  console.log('Test event received:', event.data);
+eventBus.on("test.event", (event) => {
+  console.log("Test event received:", event.data);
 });
 ```
 
@@ -580,23 +626,23 @@ eventBus.on('test.event', (event) => {
 ```typescript
 // Get event bus metrics
 const metrics = await eventBus.getMetrics();
-console.log('Event bus metrics:', metrics);
+console.log("Event bus metrics:", metrics);
 
 // Health check
 const isHealthy = await eventBus.healthCheck();
-console.log('Event bus healthy:', isHealthy);
+console.log("Event bus healthy:", isHealthy);
 ```
 
 ### Webhook Delivery History
 
 ```typescript
 // Get delivery history
-const deliveries = await webhookManager.getDeliveryHistory('my-webhook');
-console.log('Delivery history:', deliveries);
+const deliveries = await webhookManager.getDeliveryHistory("my-webhook");
+console.log("Delivery history:", deliveries);
 
 // Get failed deliveries
-const failedDeliveries = deliveries.filter(d => d.status === 'failed');
-console.log('Failed deliveries:', failedDeliveries);
+const failedDeliveries = deliveries.filter((d) => d.status === "failed");
+console.log("Failed deliveries:", failedDeliveries);
 ```
 
 ## Configuration

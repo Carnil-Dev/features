@@ -30,38 +30,38 @@ npm install react react-dom lucide-react
 ## Quick Start
 
 ```typescript
-import { 
-  ComplianceManager, 
-  AuditLogger, 
+import {
+  ComplianceManager,
+  AuditLogger,
   GDPRManager,
-  ComplianceDashboard 
-} from '@carnil/compliance';
+  ComplianceDashboard,
+} from "@carnil/compliance";
 
 // Initialize compliance manager
 const complianceManager = new ComplianceManager({
   pciDss: {
     enabled: true,
-    level: 'level-1'
+    level: "level-1",
   },
   gdpr: {
     enabled: true,
-    dataRetentionDays: 2555 // 7 years
-  }
+    dataRetentionDays: 2555, // 7 years
+  },
 });
 
 // Initialize audit logger
 const auditLogger = new AuditLogger({
-  logLevel: 'info',
-  retentionDays: 2555
+  logLevel: "info",
+  retentionDays: 2555,
 });
 
 // Log an audit event
 await auditLogger.logEvent({
-  userId: 'user_123',
-  action: 'payment_processed',
-  resource: 'payment_intent',
-  resourceId: 'pi_123',
-  metadata: { amount: 2000, currency: 'usd' }
+  userId: "user_123",
+  action: "payment_processed",
+  resource: "payment_intent",
+  resourceId: "pi_123",
+  metadata: { amount: 2000, currency: "usd" },
 });
 ```
 
@@ -70,11 +70,11 @@ await auditLogger.logEvent({
 ### Using Compliance Dashboard
 
 ```tsx
-import { ComplianceDashboard } from '@carnil/compliance';
+import { ComplianceDashboard } from "@carnil/compliance";
 
 function CompliancePage() {
   return (
-    <ComplianceDashboard 
+    <ComplianceDashboard
       organizationId="org_123"
       showPCIStatus={true}
       showGDPRStatus={true}
@@ -91,15 +91,15 @@ function CompliancePage() {
 ```typescript
 class ComplianceManager {
   constructor(config: ComplianceConfig);
-  
+
   // PCI DSS compliance
   validatePCIDSS(): Promise<PCIDSSStatus>;
   generatePCIReport(): Promise<PCIReport>;
-  
+
   // GDPR compliance
   validateGDPR(): Promise<GDPRStatus>;
   generateGDPRReport(): Promise<GDPRReport>;
-  
+
   // General compliance
   runComplianceCheck(): Promise<ComplianceStatus>;
   getComplianceScore(): Promise<number>;
@@ -111,20 +111,20 @@ class ComplianceManager {
 ```typescript
 class AuditLogger {
   constructor(config: AuditLoggerConfig);
-  
+
   // Logging methods
   logEvent(event: AuditEvent): Promise<void>;
   logSecurityEvent(event: SecurityEvent): Promise<void>;
   logDataAccess(event: DataAccessEvent): Promise<void>;
-  
+
   // Query methods
   getAuditLogs(filters: AuditLogFilters): Promise<AuditLog[]>;
   getSecurityEvents(filters: SecurityEventFilters): Promise<SecurityEvent[]>;
   getDataAccessLogs(filters: DataAccessFilters): Promise<DataAccessEvent[]>;
-  
+
   // Compliance methods
   generateAuditReport(period: string): Promise<AuditReport>;
-  exportAuditLogs(format: 'json' | 'csv'): Promise<string>;
+  exportAuditLogs(format: "json" | "csv"): Promise<string>;
 }
 ```
 
@@ -133,22 +133,22 @@ class AuditLogger {
 ```typescript
 class GDPRManager {
   constructor(config: GDPRConfig);
-  
+
   // Data subject rights
   processDataSubjectRequest(request: DataSubjectRequest): Promise<void>;
   exportPersonalData(userId: string): Promise<PersonalDataExport>;
   deletePersonalData(userId: string): Promise<void>;
   anonymizePersonalData(userId: string): Promise<void>;
-  
+
   // Consent management
   recordConsent(consent: ConsentRecord): Promise<void>;
   revokeConsent(userId: string, purpose: string): Promise<void>;
   getConsentStatus(userId: string): Promise<ConsentStatus>;
-  
+
   // Data processing
   recordDataProcessing(processing: DataProcessingRecord): Promise<void>;
   getDataProcessingRecords(userId: string): Promise<DataProcessingRecord[]>;
-  
+
   // Compliance
   validateDataRetention(): Promise<DataRetentionStatus>;
   generateGDPRReport(): Promise<GDPRReport>;
@@ -163,7 +163,7 @@ class GDPRManager {
 interface ComplianceConfig {
   pciDss?: {
     enabled: boolean;
-    level: 'level-1' | 'level-2' | 'level-3' | 'level-4';
+    level: "level-1" | "level-2" | "level-3" | "level-4";
     merchantId?: string;
   };
   gdpr?: {
@@ -174,7 +174,7 @@ interface ComplianceConfig {
   };
   audit?: {
     enabled: boolean;
-    logLevel: 'debug' | 'info' | 'warn' | 'error';
+    logLevel: "debug" | "info" | "warn" | "error";
     retentionDays: number;
   };
 }
@@ -202,8 +202,13 @@ interface AuditEvent {
 interface SecurityEvent {
   id?: string;
   userId?: string;
-  eventType: 'login' | 'logout' | 'failed_login' | 'suspicious_activity' | 'data_breach';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  eventType:
+    | "login"
+    | "logout"
+    | "failed_login"
+    | "suspicious_activity"
+    | "data_breach";
+  severity: "low" | "medium" | "high" | "critical";
   description: string;
   timestamp?: Date;
   metadata?: Record<string, any>;
@@ -218,12 +223,16 @@ interface SecurityEvent {
 interface DataAccessEvent {
   id?: string;
   userId: string;
-  dataType: 'personal' | 'financial' | 'payment' | 'usage';
-  action: 'read' | 'write' | 'delete' | 'export';
+  dataType: "personal" | "financial" | "payment" | "usage";
+  action: "read" | "write" | "delete" | "export";
   resourceId: string;
   timestamp?: Date;
   purpose: string;
-  legalBasis: 'consent' | 'contract' | 'legal_obligation' | 'legitimate_interest';
+  legalBasis:
+    | "consent"
+    | "contract"
+    | "legal_obligation"
+    | "legitimate_interest";
 }
 ```
 
@@ -233,9 +242,14 @@ interface DataAccessEvent {
 interface DataSubjectRequest {
   id?: string;
   userId: string;
-  requestType: 'access' | 'rectification' | 'erasure' | 'portability' | 'restriction';
+  requestType:
+    | "access"
+    | "rectification"
+    | "erasure"
+    | "portability"
+    | "restriction";
   description: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'rejected';
+  status: "pending" | "in_progress" | "completed" | "rejected";
   submittedAt?: Date;
   completedAt?: Date;
   response?: string;
@@ -251,7 +265,7 @@ interface ConsentRecord {
   purpose: string;
   granted: boolean;
   timestamp?: Date;
-  method: 'explicit' | 'opt_in' | 'opt_out';
+  method: "explicit" | "opt_in" | "opt_out";
   version: string;
   withdrawnAt?: Date;
 }
@@ -262,22 +276,22 @@ interface ConsentRecord {
 ### PCI DSS Compliance
 
 ```typescript
-import { ComplianceManager } from '@carnil/compliance';
+import { ComplianceManager } from "@carnil/compliance";
 
 const complianceManager = new ComplianceManager({
   pciDss: {
     enabled: true,
-    level: 'level-1'
-  }
+    level: "level-1",
+  },
 });
 
 // Run PCI DSS compliance check
 const pciStatus = await complianceManager.validatePCIDSS();
 
 if (pciStatus.compliant) {
-  console.log('PCI DSS compliant');
+  console.log("PCI DSS compliant");
 } else {
-  console.log('PCI DSS violations:', pciStatus.violations);
+  console.log("PCI DSS violations:", pciStatus.violations);
 }
 
 // Generate PCI DSS report
@@ -287,31 +301,31 @@ const pciReport = await complianceManager.generatePCIReport();
 ### GDPR Compliance
 
 ```typescript
-import { GDPRManager } from '@carnil/compliance';
+import { GDPRManager } from "@carnil/compliance";
 
 const gdprManager = new GDPRManager({
   enabled: true,
   dataRetentionDays: 2555,
-  dataController: 'Your Company Ltd'
+  dataController: "Your Company Ltd",
 });
 
 // Process data subject request
 await gdprManager.processDataSubjectRequest({
-  userId: 'user_123',
-  requestType: 'access',
-  description: 'User requests access to their personal data'
+  userId: "user_123",
+  requestType: "access",
+  description: "User requests access to their personal data",
 });
 
 // Export personal data
-const personalData = await gdprManager.exportPersonalData('user_123');
+const personalData = await gdprManager.exportPersonalData("user_123");
 
 // Record consent
 await gdprManager.recordConsent({
-  userId: 'user_123',
-  purpose: 'marketing',
+  userId: "user_123",
+  purpose: "marketing",
   granted: true,
-  method: 'explicit',
-  version: '1.0'
+  method: "explicit",
+  version: "1.0",
 });
 ```
 
@@ -320,43 +334,43 @@ await gdprManager.recordConsent({
 ### Basic Audit Logging
 
 ```typescript
-import { AuditLogger } from '@carnil/compliance';
+import { AuditLogger } from "@carnil/compliance";
 
 const auditLogger = new AuditLogger({
-  logLevel: 'info',
-  retentionDays: 2555
+  logLevel: "info",
+  retentionDays: 2555,
 });
 
 // Log payment processing
 await auditLogger.logEvent({
-  userId: 'user_123',
-  action: 'payment_processed',
-  resource: 'payment_intent',
-  resourceId: 'pi_123',
-  metadata: { 
-    amount: 2000, 
-    currency: 'usd',
-    paymentMethod: 'card'
-  }
+  userId: "user_123",
+  action: "payment_processed",
+  resource: "payment_intent",
+  resourceId: "pi_123",
+  metadata: {
+    amount: 2000,
+    currency: "usd",
+    paymentMethod: "card",
+  },
 });
 
 // Log security event
 await auditLogger.logSecurityEvent({
-  userId: 'user_123',
-  eventType: 'login',
-  severity: 'low',
-  description: 'User logged in successfully',
-  ipAddress: '192.168.1.1'
+  userId: "user_123",
+  eventType: "login",
+  severity: "low",
+  description: "User logged in successfully",
+  ipAddress: "192.168.1.1",
 });
 
 // Log data access
 await auditLogger.logDataAccess({
-  userId: 'user_123',
-  dataType: 'personal',
-  action: 'read',
-  resourceId: 'profile_123',
-  purpose: 'account_management',
-  legalBasis: 'contract'
+  userId: "user_123",
+  dataType: "personal",
+  action: "read",
+  resourceId: "profile_123",
+  purpose: "account_management",
+  legalBasis: "contract",
 });
 ```
 
@@ -365,22 +379,22 @@ await auditLogger.logDataAccess({
 ```typescript
 // Get audit logs for a user
 const auditLogs = await auditLogger.getAuditLogs({
-  userId: 'user_123',
-  startDate: new Date('2024-01-01'),
-  endDate: new Date('2024-01-31'),
-  action: 'payment_processed'
+  userId: "user_123",
+  startDate: new Date("2024-01-01"),
+  endDate: new Date("2024-01-31"),
+  action: "payment_processed",
 });
 
 // Get security events
 const securityEvents = await auditLogger.getSecurityEvents({
-  severity: 'high',
-  startDate: new Date('2024-01-01')
+  severity: "high",
+  startDate: new Date("2024-01-01"),
 });
 
 // Get data access logs
 const dataAccessLogs = await auditLogger.getDataAccessLogs({
-  userId: 'user_123',
-  dataType: 'personal'
+  userId: "user_123",
+  dataType: "personal",
 });
 ```
 
@@ -389,11 +403,11 @@ const dataAccessLogs = await auditLogger.getDataAccessLogs({
 ### ComplianceDashboard
 
 ```tsx
-import { ComplianceDashboard } from '@carnil/compliance';
+import { ComplianceDashboard } from "@carnil/compliance";
 
 function CompliancePage() {
   return (
-    <ComplianceDashboard 
+    <ComplianceDashboard
       organizationId="org_123"
       showPCIStatus={true}
       showGDPRStatus={true}
@@ -410,22 +424,22 @@ function CompliancePage() {
 
 ```javascript
 // ci-scripts/compliance-check.js
-const { ComplianceManager } = require('@carnil/compliance');
+const { ComplianceManager } = require("@carnil/compliance");
 
 async function runComplianceCheck() {
   const complianceManager = new ComplianceManager({
-    pciDss: { enabled: true, level: 'level-1' },
-    gdpr: { enabled: true, dataRetentionDays: 2555 }
+    pciDss: { enabled: true, level: "level-1" },
+    gdpr: { enabled: true, dataRetentionDays: 2555 },
   });
 
   const status = await complianceManager.runComplianceCheck();
-  
+
   if (!status.compliant) {
-    console.error('Compliance check failed:', status.violations);
+    console.error("Compliance check failed:", status.violations);
     process.exit(1);
   }
-  
-  console.log('Compliance check passed');
+
+  console.log("Compliance check passed");
 }
 
 runComplianceCheck().catch(console.error);

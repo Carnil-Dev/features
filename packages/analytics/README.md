@@ -30,7 +30,7 @@ npm install react react-dom recharts
 ## Quick Start
 
 ```typescript
-import { CarnilAnalytics, UsageTracker } from '@carnil/analytics';
+import { CarnilAnalytics, UsageTracker } from "@carnil/analytics";
 
 // Initialize analytics
 const usageTracker = new UsageTracker({
@@ -40,13 +40,17 @@ const usageTracker = new UsageTracker({
 const analytics = new CarnilAnalytics(usageTracker);
 
 // Track usage
-await analytics.trackUsage('customer_123', 'api_calls', 100);
+await analytics.trackUsage("customer_123", "api_calls", 100);
 
 // Track AI usage
-await analytics.trackAIUsage('customer_123', 'gpt-4', 1000, 0.02);
+await analytics.trackAIUsage("customer_123", "gpt-4", 1000, 0.02);
 
 // Get usage metrics
-const metrics = await analytics.getUsageMetrics('customer_123', 'api_calls', 'month');
+const metrics = await analytics.getUsageMetrics(
+  "customer_123",
+  "api_calls",
+  "month"
+);
 ```
 
 ## React Integration
@@ -54,11 +58,14 @@ const metrics = await analytics.getUsageMetrics('customer_123', 'api_calls', 'mo
 ### Using Analytics Hooks
 
 ```tsx
-import { useAnalytics, useUsageMeter } from '@carnil/analytics';
+import { useAnalytics, useUsageMeter } from "@carnil/analytics";
 
 function CustomerDashboard({ customerId }: { customerId: string }) {
   const { analytics, loading, error } = useAnalytics(customerId);
-  const { usage, loading: usageLoading } = useUsageMeter(customerId, 'api_calls');
+  const { usage, loading: usageLoading } = useUsageMeter(
+    customerId,
+    "api_calls"
+  );
 
   if (loading) return <div>Loading analytics...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -68,9 +75,11 @@ function CustomerDashboard({ customerId }: { customerId: string }) {
       <h2>Usage Summary</h2>
       <p>Total Usage: {analytics?.summary.totalUsage}</p>
       <p>Total Cost: ${analytics?.summary.totalCost}</p>
-      
+
       <h3>Current Usage</h3>
-      <p>Used: {usage.current} / {usage.limit}</p>
+      <p>
+        Used: {usage.current} / {usage.limit}
+      </p>
       <p>Reset: {usage.resetAt.toLocaleDateString()}</p>
     </div>
   );
@@ -80,7 +89,7 @@ function CustomerDashboard({ customerId }: { customerId: string }) {
 ### Using Dashboard Components
 
 ```tsx
-import { CustomerDashboard } from '@carnil/analytics';
+import { CustomerDashboard } from "@carnil/analytics";
 
 function App() {
   return (
@@ -98,21 +107,49 @@ function App() {
 ```typescript
 class CarnilAnalytics {
   constructor(usageTracker: UsageTracker);
-  
+
   // Usage tracking
-  trackUsage(customerId: string, featureId: string, usage: number): Promise<boolean>;
-  trackAIUsage(customerId: string, modelId: string, tokens: number, cost: number): Promise<boolean>;
-  
+  trackUsage(
+    customerId: string,
+    featureId: string,
+    usage: number
+  ): Promise<boolean>;
+  trackAIUsage(
+    customerId: string,
+    modelId: string,
+    tokens: number,
+    cost: number
+  ): Promise<boolean>;
+
   // Analytics
-  getCustomerReport(customerId: string, period?: string): Promise<CustomerReport>;
-  getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageMetrics[]>;
-  getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageMetrics[]>;
-  
+  getCustomerReport(
+    customerId: string,
+    period?: string
+  ): Promise<CustomerReport>;
+  getUsageMetrics(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageMetrics[]>;
+  getAIUsageMetrics(
+    customerId: string,
+    modelId?: string,
+    period?: string
+  ): Promise<AIUsageMetrics[]>;
+
   // Credit management
   getCreditBalance(customerId: string, featureId: string): Promise<number>;
-  updateCreditBalance(customerId: string, featureId: string, amount: number): Promise<boolean>;
+  updateCreditBalance(
+    customerId: string,
+    featureId: string,
+    amount: number
+  ): Promise<boolean>;
   setUsageLimit(customerId: string, limit: UsageLimit): Promise<boolean>;
-  checkUsageAllowed(customerId: string, featureId: string, requiredUsage: number): Promise<boolean>;
+  checkUsageAllowed(
+    customerId: string,
+    featureId: string,
+    requiredUsage: number
+  ): Promise<boolean>;
 }
 ```
 
@@ -121,20 +158,45 @@ class CarnilAnalytics {
 ```typescript
 class UsageTracker {
   constructor(config: UsageTrackerConfig);
-  
+
   // Core tracking methods
-  trackUsage(customerId: string, featureId: string, usage: number): Promise<boolean>;
-  trackAIUsage(customerId: string, modelId: string, tokens: number, cost: number): Promise<boolean>;
-  
+  trackUsage(
+    customerId: string,
+    featureId: string,
+    usage: number
+  ): Promise<boolean>;
+  trackAIUsage(
+    customerId: string,
+    modelId: string,
+    tokens: number,
+    cost: number
+  ): Promise<boolean>;
+
   // Metrics retrieval
-  getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageMetrics[]>;
-  getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageMetrics[]>;
-  
+  getUsageMetrics(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageMetrics[]>;
+  getAIUsageMetrics(
+    customerId: string,
+    modelId?: string,
+    period?: string
+  ): Promise<AIUsageMetrics[]>;
+
   // Credit management
   getCreditBalance(customerId: string, featureId: string): Promise<number>;
-  updateCreditBalance(customerId: string, featureId: string, amount: number): Promise<boolean>;
+  updateCreditBalance(
+    customerId: string,
+    featureId: string,
+    amount: number
+  ): Promise<boolean>;
   setUsageLimit(customerId: string, limit: UsageLimit): Promise<boolean>;
-  checkUsageAllowed(customerId: string, featureId: string, requiredUsage: number): Promise<boolean>;
+  checkUsageAllowed(
+    customerId: string,
+    featureId: string,
+    requiredUsage: number
+  ): Promise<boolean>;
 }
 ```
 
@@ -143,10 +205,19 @@ class UsageTracker {
 ```typescript
 class RealTimeUsageMeter {
   constructor(usageTracker: UsageTracker);
-  
-  trackUsage(customerId: string, featureId: string, usage: number): Promise<boolean>;
-  trackAIUsage(customerId: string, modelId: string, tokens: number, cost: number): Promise<boolean>;
-  
+
+  trackUsage(
+    customerId: string,
+    featureId: string,
+    usage: number
+  ): Promise<boolean>;
+  trackAIUsage(
+    customerId: string,
+    modelId: string,
+    tokens: number,
+    cost: number
+  ): Promise<boolean>;
+
   // Real-time monitoring
   getCurrentUsage(customerId: string, featureId: string): Promise<number>;
   getUsageRate(customerId: string, featureId: string): Promise<number>;
@@ -158,10 +229,20 @@ class RealTimeUsageMeter {
 ```typescript
 class UsageAnalyticsEngine {
   constructor(usageTracker: UsageTracker);
-  
-  generateCustomerReport(customerId: string, period: string): Promise<CustomerReport>;
-  generateUsageTrends(customerId: string, featureId: string, period: string): Promise<UsageTrend[]>;
-  generateCostAnalysis(customerId: string, period: string): Promise<CostAnalysis>;
+
+  generateCustomerReport(
+    customerId: string,
+    period: string
+  ): Promise<CustomerReport>;
+  generateUsageTrends(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageTrend[]>;
+  generateCostAnalysis(
+    customerId: string,
+    period: string
+  ): Promise<CostAnalysis>;
 }
 ```
 
@@ -174,20 +255,23 @@ function useAnalytics(customerId: string): {
   analytics: AnalyticsData | null;
   loading: boolean;
   error: string | null;
-}
+};
 ```
 
 ### useUsageMeter
 
 ```typescript
-function useUsageMeter(customerId: string, featureId: string): {
+function useUsageMeter(
+  customerId: string,
+  featureId: string
+): {
   usage: {
     current: number;
     limit: number;
     resetAt: Date;
   };
   loading: boolean;
-}
+};
 ```
 
 ## Types
@@ -256,7 +340,7 @@ interface CustomerReport {
 interface UsageLimit {
   featureId: string;
   limit: number;
-  period: 'daily' | 'weekly' | 'monthly';
+  period: "daily" | "weekly" | "monthly";
   resetAt: Date;
 }
 ```
@@ -268,14 +352,14 @@ interface UsageLimit {
 A comprehensive dashboard component showing customer usage analytics.
 
 ```tsx
-import { CustomerDashboard } from '@carnil/analytics';
+import { CustomerDashboard } from "@carnil/analytics";
 
-<CustomerDashboard 
+<CustomerDashboard
   customerId="customer_123"
   period="month"
   showAIUsage={true}
   showCostBreakdown={true}
-/>
+/>;
 ```
 
 ## Configuration
@@ -289,13 +373,13 @@ interface UsageTrackerConfig {
     url: string;
     // ... other database options
   };
-  
+
   // Real-time settings
   realTime?: {
     enabled: boolean;
     updateInterval: number; // milliseconds
   };
-  
+
   // Caching
   cache?: {
     enabled: boolean;
@@ -309,22 +393,22 @@ interface UsageTrackerConfig {
 ### Basic Usage Tracking
 
 ```typescript
-import { UsageTracker } from '@carnil/analytics';
+import { UsageTracker } from "@carnil/analytics";
 
 const tracker = new UsageTracker({
   // Your configuration
 });
 
 // Track API calls
-await tracker.trackUsage('customer_123', 'api_calls', 1);
+await tracker.trackUsage("customer_123", "api_calls", 1);
 
 // Track AI usage
-await tracker.trackAIUsage('customer_123', 'gpt-4', 1000, 0.02);
+await tracker.trackAIUsage("customer_123", "gpt-4", 1000, 0.02);
 
 // Check if usage is allowed
-const allowed = await tracker.checkUsageAllowed('customer_123', 'api_calls', 1);
+const allowed = await tracker.checkUsageAllowed("customer_123", "api_calls", 1);
 if (!allowed) {
-  throw new Error('Usage limit exceeded');
+  throw new Error("Usage limit exceeded");
 }
 ```
 
@@ -332,35 +416,35 @@ if (!allowed) {
 
 ```typescript
 // Get credit balance
-const balance = await tracker.getCreditBalance('customer_123', 'api_calls');
+const balance = await tracker.getCreditBalance("customer_123", "api_calls");
 
 // Update credit balance
-await tracker.updateCreditBalance('customer_123', 'api_calls', 100);
+await tracker.updateCreditBalance("customer_123", "api_calls", 100);
 
 // Set usage limit
-await tracker.setUsageLimit('customer_123', {
-  featureId: 'api_calls',
+await tracker.setUsageLimit("customer_123", {
+  featureId: "api_calls",
   limit: 1000,
-  period: 'monthly',
-  resetAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  period: "monthly",
+  resetAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 });
 ```
 
 ### Real-time Monitoring
 
 ```typescript
-import { RealTimeUsageMeter } from '@carnil/analytics';
+import { RealTimeUsageMeter } from "@carnil/analytics";
 
 const meter = new RealTimeUsageMeter(tracker);
 
 // Track usage in real-time
-await meter.trackUsage('customer_123', 'api_calls', 1);
+await meter.trackUsage("customer_123", "api_calls", 1);
 
 // Get current usage
-const currentUsage = await meter.getCurrentUsage('customer_123', 'api_calls');
+const currentUsage = await meter.getCurrentUsage("customer_123", "api_calls");
 
 // Get usage rate (usage per minute)
-const rate = await meter.getUsageRate('customer_123', 'api_calls');
+const rate = await meter.getUsageRate("customer_123", "api_calls");
 ```
 
 ## Contributing
