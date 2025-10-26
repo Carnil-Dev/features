@@ -1,0 +1,61 @@
+name: Release (Changesets)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Version and Publish
+        run: |
+          # Check if there are any changesets to process
+          if [ -z "$(find .changeset -name "*.md" -not -name "README.md" | head -1)" ]; then
+            echo "No changesets found, skipping version and publish"
+            exit 0
+          fi
+
+          # Version packages based on changesets
+          pnpm -w run version:patch
+
+          # Publish to npm
+          pnpm -w run release
+
+          # Commit and push the version bump
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: release packages"
+          git push origin main
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
