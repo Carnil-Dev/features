@@ -67,16 +67,18 @@ var ComplianceReportSchema = zod.z.object({
     end: zod.z.date()
   }),
   status: zod.z.enum(["pending", "in_progress", "completed", "failed"]),
-  findings: zod.z.array(zod.z.object({
-    id: zod.z.string(),
-    type: zod.z.enum(["violation", "warning", "recommendation", "info"]),
-    severity: zod.z.enum(["low", "medium", "high", "critical"]),
-    description: zod.z.string(),
-    recommendation: zod.z.string().optional(),
-    status: zod.z.enum(["open", "in_progress", "resolved", "dismissed"]),
-    createdAt: zod.z.date(),
-    resolvedAt: zod.z.date().optional()
-  })),
+  findings: zod.z.array(
+    zod.z.object({
+      id: zod.z.string(),
+      type: zod.z.enum(["violation", "warning", "recommendation", "info"]),
+      severity: zod.z.enum(["low", "medium", "high", "critical"]),
+      description: zod.z.string(),
+      recommendation: zod.z.string().optional(),
+      status: zod.z.enum(["open", "in_progress", "resolved", "dismissed"]),
+      createdAt: zod.z.date(),
+      resolvedAt: zod.z.date().optional()
+    })
+  ),
   summary: zod.z.object({
     totalEvents: zod.z.number(),
     violations: zod.z.number(),
@@ -179,34 +181,55 @@ var AuditLogger = class {
     let filteredEvents = [...this.events];
     if (filters) {
       if (filters.eventType) {
-        filteredEvents = filteredEvents.filter((e) => e.eventType === filters.eventType);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.eventType === filters.eventType
+        );
       }
       if (filters.userId) {
-        filteredEvents = filteredEvents.filter((e) => e.userId === filters.userId);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.userId === filters.userId
+        );
       }
       if (filters.customerId) {
-        filteredEvents = filteredEvents.filter((e) => e.customerId === filters.customerId);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.customerId === filters.customerId
+        );
       }
       if (filters.resourceType) {
-        filteredEvents = filteredEvents.filter((e) => e.resourceType === filters.resourceType);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.resourceType === filters.resourceType
+        );
       }
       if (filters.resourceId) {
-        filteredEvents = filteredEvents.filter((e) => e.resourceId === filters.resourceId);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.resourceId === filters.resourceId
+        );
       }
       if (filters.severity) {
-        filteredEvents = filteredEvents.filter((e) => e.severity === filters.severity);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.severity === filters.severity
+        );
       }
       if (filters.startDate) {
-        filteredEvents = filteredEvents.filter((e) => e.timestamp >= filters.startDate);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.timestamp >= filters.startDate
+        );
       }
       if (filters.endDate) {
-        filteredEvents = filteredEvents.filter((e) => e.timestamp <= filters.endDate);
+        filteredEvents = filteredEvents.filter(
+          (e) => e.timestamp <= filters.endDate
+        );
       }
     }
-    return filteredEvents.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return filteredEvents.sort(
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+    );
   }
   getAuditTrail(entityId, entityType) {
-    const events = this.getEvents({ resourceId: entityId, resourceType: entityType });
+    const events = this.getEvents({
+      resourceId: entityId,
+      resourceType: entityType
+    });
     return {
       id: `trail_${entityId}_${entityType}`,
       entityId,
@@ -275,7 +298,9 @@ var AuditLogger = class {
   analyzeCompliance(events, reportType) {
     const findings = [];
     if (reportType === "gdpr") {
-      const dataAccessEvents = events.filter((e) => e.eventType === "data_accessed");
+      const dataAccessEvents = events.filter(
+        (e) => e.eventType === "data_accessed"
+      );
       if (dataAccessEvents.length > 0) {
         findings.push({
           id: `finding_${Date.now()}_1`,
@@ -287,7 +312,9 @@ var AuditLogger = class {
           createdAt: /* @__PURE__ */ new Date()
         });
       }
-      const dataDeletionEvents = events.filter((e) => e.eventType === "data_deleted");
+      const dataDeletionEvents = events.filter(
+        (e) => e.eventType === "data_deleted"
+      );
       if (dataDeletionEvents.length === 0) {
         findings.push({
           id: `finding_${Date.now()}_2`,
@@ -301,7 +328,9 @@ var AuditLogger = class {
       }
     }
     if (reportType === "soc2") {
-      const securityEvents = events.filter((e) => e.eventType === "security_event");
+      const securityEvents = events.filter(
+        (e) => e.eventType === "security_event"
+      );
       if (securityEvents.length > 0) {
         findings.push({
           id: `finding_${Date.now()}_3`,
@@ -329,10 +358,17 @@ var AuditLogger = class {
     return findings;
   }
   calculateComplianceSummary(events, findings) {
-    const violations = findings.filter((f) => f.type === "violation").length;
+    const violations = findings.filter(
+      (f) => f.type === "violation"
+    ).length;
     const warnings = findings.filter((f) => f.type === "warning").length;
-    const recommendations = findings.filter((f) => f.type === "recommendation").length;
-    const complianceScore = Math.max(0, 100 - violations * 20 - warnings * 10 - recommendations * 5);
+    const recommendations = findings.filter(
+      (f) => f.type === "recommendation"
+    ).length;
+    const complianceScore = Math.max(
+      0,
+      100 - violations * 20 - warnings * 10 - recommendations * 5
+    );
     return {
       totalEvents: events.length,
       violations,

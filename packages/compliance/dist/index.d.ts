@@ -278,28 +278,28 @@ declare class AuditLogger {
     private maxEvents;
     private retentionDays;
     constructor(_encryptionKey?: string);
-    logEvent(event: Omit<AuditEvent, 'id' | 'timestamp'>): Promise<AuditEvent>;
+    logEvent(event: Omit<AuditEvent, "id" | "timestamp">): Promise<AuditEvent>;
     logUserAction(userId: string, action: string, description: string, metadata?: Record<string, any>): Promise<AuditEvent>;
-    logPaymentEvent(customerId: string, eventType: AuditEvent['eventType'], action: string, description: string, resourceId?: string, metadata?: Record<string, any>): Promise<AuditEvent>;
+    logPaymentEvent(customerId: string, eventType: AuditEvent["eventType"], action: string, description: string, resourceId?: string, metadata?: Record<string, any>): Promise<AuditEvent>;
     logDataAccess(userId: string, resourceType: string, resourceId: string, action: string, metadata?: Record<string, any>): Promise<AuditEvent>;
-    logSecurityEvent(eventType: 'security_event', action: string, description: string, severity?: AuditEvent['severity'], metadata?: Record<string, any>): Promise<AuditEvent>;
-    logComplianceEvent(eventType: 'compliance_event', action: string, description: string, metadata?: Record<string, any>): Promise<AuditEvent>;
+    logSecurityEvent(eventType: "security_event", action: string, description: string, severity?: AuditEvent["severity"], metadata?: Record<string, any>): Promise<AuditEvent>;
+    logComplianceEvent(eventType: "compliance_event", action: string, description: string, metadata?: Record<string, any>): Promise<AuditEvent>;
     getEvents(filters?: {
-        eventType?: AuditEvent['eventType'];
+        eventType?: AuditEvent["eventType"];
         userId?: string;
         customerId?: string;
         resourceType?: string;
         resourceId?: string;
-        severity?: AuditEvent['severity'];
+        severity?: AuditEvent["severity"];
         startDate?: Date;
         endDate?: Date;
     }): AuditEvent[];
     getAuditTrail(entityId: string, entityType: string): AuditTrail;
-    generateComplianceReport(reportType: ComplianceReport['reportType'], period: {
+    generateComplianceReport(reportType: ComplianceReport["reportType"], period: {
         start: Date;
         end: Date;
     }, generatedBy: string): Promise<ComplianceReport>;
-    exportAuditData(filters?: Parameters<AuditLogger['getEvents']>[0], format?: 'json' | 'csv'): Promise<string>;
+    exportAuditData(filters?: Parameters<AuditLogger["getEvents"]>[0], format?: "json" | "csv"): Promise<string>;
     private generateEventId;
     private encryptMetadata;
     private cleanupOldEvents;
