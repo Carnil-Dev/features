@@ -231,10 +231,12 @@ export class AIMetricsCalculator {
 
     usages.forEach(usage => {
       const date = usage.timestamp.toISOString().split('T')[0];
-      if (!dailyCosts[date]) {
-        dailyCosts[date] = 0;
+      if (date) {
+        if (!dailyCosts[date]) {
+          dailyCosts[date] = 0;
+        }
+        dailyCosts[date] += usage.cost;
       }
-      dailyCosts[date] += usage.cost;
     });
 
     return Object.entries(dailyCosts)
@@ -308,8 +310,11 @@ export class AIMetricsCalculator {
       if (!modelUsage[usage.modelId]) {
         modelUsage[usage.modelId] = { usage: 0, cost: 0 };
       }
-      modelUsage[usage.modelId].usage += usage.totalTokens;
-      modelUsage[usage.modelId].cost += usage.cost;
+      const modelData = modelUsage[usage.modelId];
+      if (modelData) {
+        modelData.usage += usage.totalTokens;
+        modelData.cost += usage.cost;
+      }
     });
 
     return Object.entries(modelUsage)

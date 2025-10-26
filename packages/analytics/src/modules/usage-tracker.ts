@@ -253,8 +253,10 @@ export class UsageAnalyticsEngine {
   private calculateGrowthRate(data: Array<{ usage: number }>): number {
     if (data.length < 2) return 0;
 
-    const first = data[0].usage;
-    const last = data[data.length - 1].usage;
+    const first = data[0]?.usage;
+    const last = data[data.length - 1]?.usage;
+
+    if (first === undefined || last === undefined) return 0;
 
     return ((last - first) / first) * 100;
   }

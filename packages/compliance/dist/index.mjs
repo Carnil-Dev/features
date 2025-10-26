@@ -2,6 +2,7 @@ import { z } from 'zod';
 import crypto from 'crypto';
 import { useState, useEffect } from 'react';
 import { RefreshCw, XCircle, Download, Settings, Shield, Users, Lock, FileText, CheckCircle, AlertTriangle, Info, Eye } from 'lucide-react';
+import { jsx, jsxs } from 'react/jsx-runtime';
 
 // src/audit/audit-logger.ts
 var AuditEventSchema = z.object({
@@ -824,56 +825,87 @@ function ComplianceDashboard({ className }) {
     URL.revokeObjectURL(url);
   };
   if (loading) {
-    return /* @__PURE__ */ React.createElement("div", { className: `flex items-center justify-center h-96 ${className}` }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement(RefreshCw, { className: "w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600" }, "Loading compliance data...")));
+    return /* @__PURE__ */ jsx("div", { className: `flex items-center justify-center h-96 ${className}`, children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+      /* @__PURE__ */ jsx(RefreshCw, { className: "w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" }),
+      /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Loading compliance data..." })
+    ] }) });
   }
   if (error) {
-    return /* @__PURE__ */ React.createElement("div", { className: `flex items-center justify-center h-96 ${className}` }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement(XCircle, { className: "w-8 h-8 mx-auto mb-4 text-red-600" }), /* @__PURE__ */ React.createElement("p", { className: "text-red-600 mb-4" }, "Error: ", error), /* @__PURE__ */ React.createElement(
+    return /* @__PURE__ */ jsx("div", { className: `flex items-center justify-center h-96 ${className}`, children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+      /* @__PURE__ */ jsx(XCircle, { className: "w-8 h-8 mx-auto mb-4 text-red-600" }),
+      /* @__PURE__ */ jsxs("p", { className: "text-red-600 mb-4", children: [
+        "Error: ",
+        error
+      ] }),
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          onClick: handleRefresh,
+          className: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700",
+          children: "Retry"
+        }
+      )
+    ] }) });
+  }
+  return /* @__PURE__ */ jsxs("div", { className: `compliance-dashboard ${className}`, children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-6", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold text-gray-900", children: "Compliance Dashboard" }),
+        /* @__PURE__ */ jsx("p", { className: "text-gray-600", children: "Monitor and manage compliance across all regulations" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: handleRefresh,
+            className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
+            title: "Refresh data",
+            children: /* @__PURE__ */ jsx(RefreshCw, { className: "w-5 h-5" })
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: handleExportReport,
+            className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
+            title: "Export report",
+            children: /* @__PURE__ */ jsx(Download, { className: "w-5 h-5" })
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
+            title: "Settings",
+            children: /* @__PURE__ */ jsx(Settings, { className: "w-5 h-5" })
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx("div", { className: "flex space-x-1 mb-6", children: [
+      { id: "overview", label: "Overview", icon: Shield },
+      { id: "gdpr", label: "GDPR", icon: Users },
+      { id: "soc2", label: "SOC2", icon: Lock },
+      { id: "audit", label: "Audit", icon: FileText }
+    ].map(({ id, label, icon: Icon }) => /* @__PURE__ */ jsxs(
       "button",
       {
-        onClick: handleRefresh,
-        className: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        onClick: () => setSelectedTab(id),
+        className: `flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedTab === id ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"}`,
+        children: [
+          /* @__PURE__ */ jsx(Icon, { className: "w-4 h-4" }),
+          /* @__PURE__ */ jsx("span", { children: label })
+        ]
       },
-      "Retry"
-    )));
-  }
-  return /* @__PURE__ */ React.createElement("div", { className: `compliance-dashboard ${className}` }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-6" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold text-gray-900" }, "Compliance Dashboard"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600" }, "Monitor and manage compliance across all regulations")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-2" }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: handleRefresh,
-      className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
-      title: "Refresh data"
-    },
-    /* @__PURE__ */ React.createElement(RefreshCw, { className: "w-5 h-5" })
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: handleExportReport,
-      className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
-      title: "Export report"
-    },
-    /* @__PURE__ */ React.createElement(Download, { className: "w-5 h-5" })
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      className: "p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100",
-      title: "Settings"
-    },
-    /* @__PURE__ */ React.createElement(Settings, { className: "w-5 h-5" })
-  ))), /* @__PURE__ */ React.createElement("div", { className: "flex space-x-1 mb-6" }, [
-    { id: "overview", label: "Overview", icon: Shield },
-    { id: "gdpr", label: "GDPR", icon: Users },
-    { id: "soc2", label: "SOC2", icon: Lock },
-    { id: "audit", label: "Audit", icon: FileText }
-  ].map(({ id, label, icon: Icon }) => /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      key: id,
-      onClick: () => setSelectedTab(id),
-      className: `flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedTab === id ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"}`
-    },
-    /* @__PURE__ */ React.createElement(Icon, { className: "w-4 h-4" }),
-    /* @__PURE__ */ React.createElement("span", null, label)
-  ))), /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, selectedTab === "overview" && /* @__PURE__ */ React.createElement(OverviewTab, { data: complianceData?.overview }), selectedTab === "gdpr" && /* @__PURE__ */ React.createElement(GDPRTab, { data: complianceData?.gdpr }), selectedTab === "soc2" && /* @__PURE__ */ React.createElement(SOC2Tab, { data: complianceData?.soc2 }), selectedTab === "audit" && /* @__PURE__ */ React.createElement(AuditTab, { data: complianceData?.audit })));
+      id
+    )) }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+      selectedTab === "overview" && /* @__PURE__ */ jsx(OverviewTab, { data: complianceData?.overview }),
+      selectedTab === "gdpr" && /* @__PURE__ */ jsx(GDPRTab, { data: complianceData?.gdpr }),
+      selectedTab === "soc2" && /* @__PURE__ */ jsx(SOC2Tab, { data: complianceData?.soc2 }),
+      selectedTab === "audit" && /* @__PURE__ */ jsx(AuditTab, { data: complianceData?.audit })
+    ] })
+  ] });
 }
 function OverviewTab({ data }) {
   if (!data) return null;
@@ -898,64 +930,263 @@ function OverviewTab({ data }) {
     }
   };
   const StatusIcon = getStatusIcon(data.status);
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-4" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-semibold text-gray-900" }, "Overall Compliance Status"), /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: `flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(data.status)}`
-    },
-    /* @__PURE__ */ React.createElement(StatusIcon, { className: "w-4 h-4" }),
-    /* @__PURE__ */ React.createElement("span", null, data.status)
-  )), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-3xl font-bold text-blue-600" }, data.overallScore, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Overall Score")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-3xl font-bold text-green-600" }, data.passed), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Passed Checks")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-3xl font-bold text-red-600" }, data.failed), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Failed Checks")))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-4 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-green-600" }, data.passed), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Passed")), /* @__PURE__ */ React.createElement(CheckCircle, { className: "w-8 h-8 text-green-600" }))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-4 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-red-600" }, data.failed), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Failed")), /* @__PURE__ */ React.createElement(XCircle, { className: "w-8 h-8 text-red-600" }))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-4 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-yellow-600" }, data.warnings), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Warnings")), /* @__PURE__ */ React.createElement(AlertTriangle, { className: "w-8 h-8 text-yellow-600" }))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-4 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-gray-600" }, data.totalChecks), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Total Checks")), /* @__PURE__ */ React.createElement(Info, { className: "w-8 h-8 text-gray-600" })))));
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-4", children: [
+        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold text-gray-900", children: "Overall Compliance Status" }),
+        /* @__PURE__ */ jsxs(
+          "div",
+          {
+            className: `flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(data.status)}`,
+            children: [
+              /* @__PURE__ */ jsx(StatusIcon, { className: "w-4 h-4" }),
+              /* @__PURE__ */ jsx("span", { children: data.status })
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-3xl font-bold text-blue-600", children: [
+            data.overallScore,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Overall Score" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-3xl font-bold text-green-600", children: data.passed }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Passed Checks" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-3xl font-bold text-red-600", children: data.failed }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Failed Checks" })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", children: [
+      /* @__PURE__ */ jsx("div", { className: "bg-white p-4 rounded-lg shadow", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-green-600", children: data.passed }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Passed" })
+        ] }),
+        /* @__PURE__ */ jsx(CheckCircle, { className: "w-8 h-8 text-green-600" })
+      ] }) }),
+      /* @__PURE__ */ jsx("div", { className: "bg-white p-4 rounded-lg shadow", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-red-600", children: data.failed }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Failed" })
+        ] }),
+        /* @__PURE__ */ jsx(XCircle, { className: "w-8 h-8 text-red-600" })
+      ] }) }),
+      /* @__PURE__ */ jsx("div", { className: "bg-white p-4 rounded-lg shadow", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-yellow-600", children: data.warnings }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Warnings" })
+        ] }),
+        /* @__PURE__ */ jsx(AlertTriangle, { className: "w-8 h-8 text-yellow-600" })
+      ] }) }),
+      /* @__PURE__ */ jsx("div", { className: "bg-white p-4 rounded-lg shadow", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-gray-600", children: data.totalChecks }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Total Checks" })
+        ] }),
+        /* @__PURE__ */ jsx(Info, { className: "w-8 h-8 text-gray-600" })
+      ] }) })
+    ] })
+  ] });
 }
 function GDPRTab({ data }) {
   if (!data) return null;
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-semibold text-gray-900 mb-4" }, "GDPR Compliance"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-blue-600" }, data.dataSubjects.toLocaleString()), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Data Subjects")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-green-600" }, data.consentRate, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Consent Rate")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-purple-600" }, data.erasureRequests), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Erasure Requests")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-orange-600" }, data.portabilityRequests), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Portability Requests")))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-900 mb-4" }, "Recent Findings"), /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, data.findings.map((finding) => /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      key: finding.id,
-      className: "flex items-center justify-between p-3 bg-gray-50 rounded-md"
-    },
-    /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-3" }, /* @__PURE__ */ React.createElement(
-      "div",
-      {
-        className: `w-3 h-3 rounded-full ${finding.severity === "high" ? "bg-red-500" : finding.severity === "medium" ? "bg-yellow-500" : "bg-blue-500"}`
-      }
-    ), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "font-medium text-gray-900" }, finding.description), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Severity: ", finding.severity))),
-    /* @__PURE__ */ React.createElement(
-      "div",
-      {
-        className: `px-2 py-1 rounded-full text-xs font-medium ${finding.status === "open" ? "bg-red-100 text-red-800" : finding.status === "resolved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`
-      },
-      finding.status
-    )
-  )))));
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold text-gray-900 mb-4", children: "GDPR Compliance" }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-600", children: data.dataSubjects.toLocaleString() }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Data Subjects" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-green-600", children: [
+            data.consentRate,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Consent Rate" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-purple-600", children: data.erasureRequests }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Erasure Requests" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-orange-600", children: data.portabilityRequests }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Portability Requests" })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Recent Findings" }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: data.findings.map((finding) => /* @__PURE__ */ jsxs(
+        "div",
+        {
+          className: "flex items-center justify-between p-3 bg-gray-50 rounded-md",
+          children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+              /* @__PURE__ */ jsx(
+                "div",
+                {
+                  className: `w-3 h-3 rounded-full ${finding.severity === "high" ? "bg-red-500" : finding.severity === "medium" ? "bg-yellow-500" : "bg-blue-500"}`
+                }
+              ),
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900", children: finding.description }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-gray-600", children: [
+                  "Severity: ",
+                  finding.severity
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx(
+              "div",
+              {
+                className: `px-2 py-1 rounded-full text-xs font-medium ${finding.status === "open" ? "bg-red-100 text-red-800" : finding.status === "resolved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`,
+                children: finding.status
+              }
+            )
+          ]
+        },
+        finding.id
+      )) })
+    ] })
+  ] });
 }
 function SOC2Tab({ data }) {
   if (!data) return null;
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-semibold text-gray-900 mb-4" }, "SOC2 Compliance"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-blue-600" }, data.securityScore, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Security")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-green-600" }, data.availabilityScore, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Availability")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-purple-600" }, data.processingIntegrity, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Processing Integrity")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-orange-600" }, data.confidentiality, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Confidentiality")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-red-600" }, data.privacy, "%"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Privacy")))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-900 mb-4" }, "SOC2 Findings"), /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, data.findings.map((finding) => /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      key: finding.id,
-      className: "flex items-center justify-between p-3 bg-gray-50 rounded-md"
-    },
-    /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-3" }, /* @__PURE__ */ React.createElement(
-      "div",
-      {
-        className: `w-3 h-3 rounded-full ${finding.severity === "high" ? "bg-red-500" : finding.severity === "medium" ? "bg-yellow-500" : "bg-blue-500"}`
-      }
-    ), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "font-medium text-gray-900" }, finding.description), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Type: ", finding.type))),
-    /* @__PURE__ */ React.createElement(
-      "div",
-      {
-        className: `px-2 py-1 rounded-full text-xs font-medium ${finding.status === "open" ? "bg-red-100 text-red-800" : finding.status === "resolved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`
-      },
-      finding.status
-    )
-  )))));
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold text-gray-900 mb-4", children: "SOC2 Compliance" }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-blue-600", children: [
+            data.securityScore,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Security" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-green-600", children: [
+            data.availabilityScore,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Availability" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-purple-600", children: [
+            data.processingIntegrity,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Processing Integrity" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-orange-600", children: [
+            data.confidentiality,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Confidentiality" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-red-600", children: [
+            data.privacy,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Privacy" })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "SOC2 Findings" }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: data.findings.map((finding) => /* @__PURE__ */ jsxs(
+        "div",
+        {
+          className: "flex items-center justify-between p-3 bg-gray-50 rounded-md",
+          children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+              /* @__PURE__ */ jsx(
+                "div",
+                {
+                  className: `w-3 h-3 rounded-full ${finding.severity === "high" ? "bg-red-500" : finding.severity === "medium" ? "bg-yellow-500" : "bg-blue-500"}`
+                }
+              ),
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900", children: finding.description }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-gray-600", children: [
+                  "Type: ",
+                  finding.type
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx(
+              "div",
+              {
+                className: `px-2 py-1 rounded-full text-xs font-medium ${finding.status === "open" ? "bg-red-100 text-red-800" : finding.status === "resolved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`,
+                children: finding.status
+              }
+            )
+          ]
+        },
+        finding.id
+      )) })
+    ] })
+  ] });
 }
 function AuditTab({ data }) {
   if (!data) return null;
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-semibold text-gray-900 mb-4" }, "Audit Trail"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-blue-600" }, data.totalEvents.toLocaleString()), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Total Events")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-red-600" }, data.securityEvents), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Security Events")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-green-600" }, data.dataAccessEvents), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Data Access Events")), /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "text-2xl font-bold text-yellow-600" }, data.systemErrors), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "System Errors")))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-900 mb-4" }, "Recent Activity"), /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between p-3 bg-gray-50 rounded-md" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-3" }, /* @__PURE__ */ React.createElement(Eye, { className: "w-5 h-5 text-blue-600" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "font-medium text-gray-900" }, "Data access logged"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Customer data accessed by user"))), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-500" }, "2 minutes ago")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between p-3 bg-gray-50 rounded-md" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-5 h-5 text-green-600" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "font-medium text-gray-900" }, "Security event resolved"), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-600" }, "Suspicious login attempt blocked"))), /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-500" }, "1 hour ago")))));
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Audit Trail" }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-600", children: data.totalEvents.toLocaleString() }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Total Events" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-red-600", children: data.securityEvents }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Security Events" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-green-600", children: data.dataAccessEvents }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Data Access Events" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-yellow-600", children: data.systemErrors }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "System Errors" })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+      /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-gray-900 mb-4", children: "Recent Activity" }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-3 bg-gray-50 rounded-md", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+            /* @__PURE__ */ jsx(Eye, { className: "w-5 h-5 text-blue-600" }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900", children: "Data access logged" }),
+              /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Customer data accessed by user" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-500", children: "2 minutes ago" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-3 bg-gray-50 rounded-md", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+            /* @__PURE__ */ jsx(Lock, { className: "w-5 h-5 text-green-600" }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900", children: "Security event resolved" }),
+              /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-600", children: "Suspicious login attempt blocked" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-500", children: "1 hour ago" })
+        ] })
+      ] })
+    ] })
+  ] });
 }
 var ComplianceManager = class {
   constructor() {

@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var zod = require('zod');
 var recharts = require('recharts');
+var jsxRuntime = require('react/jsx-runtime');
 var react = require('react');
 
 // src/modules/usage-tracker.ts
@@ -139,8 +140,9 @@ var UsageAnalyticsEngine = class {
   }
   calculateGrowthRate(data) {
     if (data.length < 2) return 0;
-    const first = data[0].usage;
-    const last = data[data.length - 1].usage;
+    const first = data[0]?.usage;
+    const last = data[data.length - 1]?.usage;
+    if (first === void 0 || last === void 0) return 0;
     return (last - first) / first * 100;
   }
   findPeakDay(data) {
@@ -340,10 +342,12 @@ var AIMetricsCalculator = class {
     const dailyCosts = {};
     usages.forEach((usage) => {
       const date = usage.timestamp.toISOString().split("T")[0];
-      if (!dailyCosts[date]) {
-        dailyCosts[date] = 0;
+      if (date) {
+        if (!dailyCosts[date]) {
+          dailyCosts[date] = 0;
+        }
+        dailyCosts[date] += usage.cost;
       }
-      dailyCosts[date] += usage.cost;
     });
     return Object.entries(dailyCosts).map(([date, cost]) => ({ date, cost })).sort((a, b) => a.date.localeCompare(b.date));
   }
@@ -391,8 +395,11 @@ var AIMetricsCalculator = class {
       if (!modelUsage[usage.modelId]) {
         modelUsage[usage.modelId] = { usage: 0, cost: 0 };
       }
-      modelUsage[usage.modelId].usage += usage.totalTokens;
-      modelUsage[usage.modelId].cost += usage.cost;
+      const modelData = modelUsage[usage.modelId];
+      if (modelData) {
+        modelData.usage += usage.totalTokens;
+        modelData.cost += usage.cost;
+      }
     });
     return Object.entries(modelUsage).map(([modelId, data]) => ({ modelId, ...data })).sort((a, b) => b.usage - a.usage).slice(0, 5);
   }
@@ -435,43 +442,169 @@ function generateAIMetricsDashboard(tokenUsages, customerId, period = "month") {
 }
 function CustomerDashboard({ data }) {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Total Usage"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-blue-600" }, data.summary.totalUsage.toLocaleString()), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "units this month")), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Total Cost"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-green-600" }, "$", data.summary.totalCost.toFixed(2)), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "this month")), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Daily Average"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-purple-600" }, data.summary.averageDailyUsage.toFixed(0)), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "units per day"))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "Usage Trends"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.LineChart, { data: data.usage }, /* @__PURE__ */ React.createElement(recharts.CartesianGrid, { strokeDasharray: "3 3" }), /* @__PURE__ */ React.createElement(recharts.XAxis, { dataKey: "date" }), /* @__PURE__ */ React.createElement(recharts.YAxis, null), /* @__PURE__ */ React.createElement(recharts.Tooltip, null), /* @__PURE__ */ React.createElement(recharts.Line, { type: "monotone", dataKey: "usage", stroke: "#8884d8", strokeWidth: 2 })))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "AI Usage Trends"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.LineChart, { data: data.aiUsage }, /* @__PURE__ */ React.createElement(recharts.CartesianGrid, { strokeDasharray: "3 3" }), /* @__PURE__ */ React.createElement(recharts.XAxis, { dataKey: "date" }), /* @__PURE__ */ React.createElement(recharts.YAxis, null), /* @__PURE__ */ React.createElement(recharts.Tooltip, null), /* @__PURE__ */ React.createElement(recharts.Line, { type: "monotone", dataKey: "tokens", stroke: "#82ca9d", strokeWidth: 2 }))))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "Top Features"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.BarChart, { data: data.topFeatures }, /* @__PURE__ */ React.createElement(recharts.CartesianGrid, { strokeDasharray: "3 3" }), /* @__PURE__ */ React.createElement(recharts.XAxis, { dataKey: "featureId" }), /* @__PURE__ */ React.createElement(recharts.YAxis, null), /* @__PURE__ */ React.createElement(recharts.Tooltip, null), /* @__PURE__ */ React.createElement(recharts.Bar, { dataKey: "usage", fill: "#8884d8" })))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "AI Model Usage"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.PieChart, null, /* @__PURE__ */ React.createElement(
-    recharts.Pie,
-    {
-      data: data.topModels,
-      cx: "50%",
-      cy: "50%",
-      labelLine: false,
-      label: ({ modelId, percent }) => `${modelId} ${(percent * 100).toFixed(0)}%`,
-      outerRadius: 80,
-      fill: "#8884d8",
-      dataKey: "tokens"
-    },
-    data.topModels.map((_, index) => /* @__PURE__ */ React.createElement(recharts.Cell, { key: `cell-${index}`, fill: COLORS[index % COLORS.length] }))
-  ), /* @__PURE__ */ React.createElement(recharts.Tooltip, null))))));
+  return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Total Usage" }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-3xl font-bold text-blue-600", children: data.summary.totalUsage.toLocaleString() }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "units this month" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Total Cost" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-3xl font-bold text-green-600", children: [
+          "$",
+          data.summary.totalCost.toFixed(2)
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "this month" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Daily Average" }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-3xl font-bold text-purple-600", children: data.summary.averageDailyUsage.toFixed(0) }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "units per day" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Usage Trends" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.LineChart, { data: data.usage, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.CartesianGrid, { strokeDasharray: "3 3" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "date" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Line, { type: "monotone", dataKey: "usage", stroke: "#8884d8", strokeWidth: 2 })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "AI Usage Trends" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.LineChart, { data: data.aiUsage, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.CartesianGrid, { strokeDasharray: "3 3" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "date" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Line, { type: "monotone", dataKey: "tokens", stroke: "#82ca9d", strokeWidth: 2 })
+        ] }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Top Features" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.BarChart, { data: data.topFeatures, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.CartesianGrid, { strokeDasharray: "3 3" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "featureId" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Bar, { dataKey: "usage", fill: "#8884d8" })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "AI Model Usage" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.PieChart, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(
+            recharts.Pie,
+            {
+              data: data.topModels,
+              cx: "50%",
+              cy: "50%",
+              labelLine: false,
+              label: ({ modelId, percent }) => `${modelId} ${(percent * 100).toFixed(0)}%`,
+              outerRadius: 80,
+              fill: "#8884d8",
+              dataKey: "tokens",
+              children: data.topModels.map((_, index) => /* @__PURE__ */ jsxRuntime.jsx(recharts.Cell, { fill: COLORS[index % COLORS.length] }, `cell-${index}`))
+            }
+          ),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {})
+        ] }) })
+      ] })
+    ] })
+  ] });
 }
 function UsageMeter({ current, limit, featureId, resetAt }) {
   const percentage = current / limit * 100;
   const isNearLimit = percentage > 80;
   const isOverLimit = percentage > 100;
-  return /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-center mb-2" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold" }, featureId), /* @__PURE__ */ React.createElement(
-    "span",
-    {
-      className: `text-sm font-medium ${isOverLimit ? "text-red-600" : isNearLimit ? "text-yellow-600" : "text-green-600"}`
-    },
-    current.toLocaleString(),
-    " / ",
-    limit.toLocaleString()
-  )), /* @__PURE__ */ React.createElement("div", { className: "w-full bg-gray-200 rounded-full h-2.5" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: `h-2.5 rounded-full ${isOverLimit ? "bg-red-500" : isNearLimit ? "bg-yellow-500" : "bg-green-500"}`,
-      style: { width: `${Math.min(percentage, 100)}%` }
-    }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex justify-between text-sm text-gray-500 mt-2" }, /* @__PURE__ */ React.createElement("span", null, "Reset: ", resetAt.toLocaleDateString()), /* @__PURE__ */ React.createElement("span", null, percentage.toFixed(1), "% used")));
+  return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center mb-2", children: [
+      /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold", children: featureId }),
+      /* @__PURE__ */ jsxRuntime.jsxs(
+        "span",
+        {
+          className: `text-sm font-medium ${isOverLimit ? "text-red-600" : isNearLimit ? "text-yellow-600" : "text-green-600"}`,
+          children: [
+            current.toLocaleString(),
+            " / ",
+            limit.toLocaleString()
+          ]
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-full bg-gray-200 rounded-full h-2.5", children: /* @__PURE__ */ jsxRuntime.jsx(
+      "div",
+      {
+        className: `h-2.5 rounded-full ${isOverLimit ? "bg-red-500" : isNearLimit ? "bg-yellow-500" : "bg-green-500"}`,
+        style: { width: `${Math.min(percentage, 100)}%` }
+      }
+    ) }),
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-gray-500 mt-2", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+        "Reset: ",
+        resetAt.toLocaleDateString()
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+        percentage.toFixed(1),
+        "% used"
+      ] })
+    ] })
+  ] });
 }
 function AIUsageDashboard({ data }) {
-  return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Total Tokens"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-blue-600" }, data.totalTokens.toLocaleString()), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "tokens processed")), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Total Cost"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-green-600" }, "$", data.totalCost.toFixed(2)), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "AI usage cost")), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-700" }, "Avg Cost/Token"), /* @__PURE__ */ React.createElement("p", { className: "text-3xl font-bold text-purple-600" }, "$", (data.totalCost / data.totalTokens).toFixed(6)), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "per token"))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "Token Usage Over Time"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.LineChart, { data: data.dailyBreakdown }, /* @__PURE__ */ React.createElement(recharts.CartesianGrid, { strokeDasharray: "3 3" }), /* @__PURE__ */ React.createElement(recharts.XAxis, { dataKey: "date" }), /* @__PURE__ */ React.createElement(recharts.YAxis, null), /* @__PURE__ */ React.createElement(recharts.Tooltip, null), /* @__PURE__ */ React.createElement(recharts.Line, { type: "monotone", dataKey: "tokens", stroke: "#8884d8", strokeWidth: 2 })))), /* @__PURE__ */ React.createElement("div", { className: "bg-white p-6 rounded-lg shadow" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold mb-4" }, "Usage by Hour"), /* @__PURE__ */ React.createElement(recharts.ResponsiveContainer, { width: "100%", height: 300 }, /* @__PURE__ */ React.createElement(recharts.BarChart, { data: data.hourlyBreakdown }, /* @__PURE__ */ React.createElement(recharts.CartesianGrid, { strokeDasharray: "3 3" }), /* @__PURE__ */ React.createElement(recharts.XAxis, { dataKey: "hour" }), /* @__PURE__ */ React.createElement(recharts.YAxis, null), /* @__PURE__ */ React.createElement(recharts.Tooltip, null), /* @__PURE__ */ React.createElement(recharts.Bar, { dataKey: "tokens", fill: "#82ca9d" }))))));
+  return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Total Tokens" }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-3xl font-bold text-blue-600", children: data.totalTokens.toLocaleString() }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "tokens processed" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Total Cost" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-3xl font-bold text-green-600", children: [
+          "$",
+          data.totalCost.toFixed(2)
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "AI usage cost" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold text-gray-700", children: "Avg Cost/Token" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-3xl font-bold text-purple-600", children: [
+          "$",
+          (data.totalCost / data.totalTokens).toFixed(6)
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500", children: "per token" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Token Usage Over Time" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.LineChart, { data: data.dailyBreakdown, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.CartesianGrid, { strokeDasharray: "3 3" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "date" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Line, { type: "monotone", dataKey: "tokens", stroke: "#8884d8", strokeWidth: 2 })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-white p-6 rounded-lg shadow", children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4", children: "Usage by Hour" }),
+        /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.BarChart, { data: data.hourlyBreakdown, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.CartesianGrid, { strokeDasharray: "3 3" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "hour" }),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
+          /* @__PURE__ */ jsxRuntime.jsx(recharts.Bar, { dataKey: "tokens", fill: "#82ca9d" })
+        ] }) })
+      ] })
+    ] })
+  ] });
 }
 var CarnilAnalytics = class {
   constructor(usageTracker) {
