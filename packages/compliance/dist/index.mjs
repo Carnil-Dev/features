@@ -204,8 +204,8 @@ var AuditLogger = class {
       entityId,
       entityType,
       events,
-      createdAt: events.length > 0 ? events[events.length - 1].timestamp : /* @__PURE__ */ new Date(),
-      updatedAt: events.length > 0 ? events[0].timestamp : /* @__PURE__ */ new Date()
+      createdAt: events.length > 0 ? events[events.length - 1]?.timestamp || /* @__PURE__ */ new Date() : /* @__PURE__ */ new Date(),
+      updatedAt: events.length > 0 ? events[0]?.timestamp || /* @__PURE__ */ new Date() : /* @__PURE__ */ new Date()
     };
   }
   // ============================================================================

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // Usage Tracking Schemas
@@ -42,7 +42,7 @@ export const UsageLimitSchema = z.object({
   customerId: z.string(),
   featureId: z.string(),
   limit: z.number().positive(),
-  period: z.enum(['day', 'week', 'month', 'year']),
+  period: z.enum(["day", "week", "month", "year"]),
   resetAt: z.date(),
   overageAllowed: z.boolean().default(false),
   overagePrice: z.number().optional(),
@@ -67,18 +67,32 @@ export interface UsageTracker {
   trackAIUsage(event: AIUsageEvent): Promise<void>;
 
   // Get usage metrics
-  getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageEvent[]>;
-  getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageEvent[]>;
+  getUsageMetrics(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageEvent[]>;
+  getAIUsageMetrics(
+    customerId: string,
+    modelId?: string,
+    period?: string
+  ): Promise<AIUsageEvent[]>;
 
   // Credit and limit management
-  getCreditBalance(customerId: string, featureId: string): Promise<CreditBalance | null>;
+  getCreditBalance(
+    customerId: string,
+    featureId: string
+  ): Promise<CreditBalance | null>;
   updateCreditBalance(
     customerId: string,
     featureId: string,
     amount: number
   ): Promise<CreditBalance>;
   setUsageLimit(customerId: string, limit: UsageLimit): Promise<void>;
-  getUsageLimit(customerId: string, featureId: string): Promise<UsageLimit | null>;
+  getUsageLimit(
+    customerId: string,
+    featureId: string
+  ): Promise<UsageLimit | null>;
 
   // Check if usage is allowed
   checkUsageAllowed(
@@ -126,13 +140,21 @@ export class RealTimeUsageMeter {
 
   constructor(private tracker: UsageTracker) {}
 
-  async trackUsage(customerId: string, featureId: string, usage: number): Promise<boolean> {
+  async trackUsage(
+    customerId: string,
+    featureId: string,
+    usage: number
+  ): Promise<boolean> {
     const key = `${customerId}:${featureId}`;
     const currentUsage = this.usageCache.get(key) || 0;
     const newUsage = currentUsage + usage;
 
     // Check if usage is allowed
-    const allowed = await this.tracker.checkUsageAllowed(customerId, featureId, usage);
+    const allowed = await this.tracker.checkUsageAllowed(
+      customerId,
+      featureId,
+      usage
+    );
 
     if (!allowed.allowed) {
       return false;
@@ -162,7 +184,7 @@ export class RealTimeUsageMeter {
     await this.tracker.trackAIUsage({
       customerId,
       modelId,
-      provider: 'openai', // or other provider
+      provider: "openai", // or other provider
       tokens,
       inputTokens: Math.floor(tokens * 0.7), // Estimate
       outputTokens: Math.floor(tokens * 0.3), // Estimate
@@ -194,7 +216,7 @@ export class UsageAnalyticsEngine {
 
   async generateCustomerReport(
     customerId: string,
-    period: string = 'month'
+    period: string = "month"
   ): Promise<{
     summary: {
       totalUsage: number;
@@ -214,34 +236,43 @@ export class UsageAnalyticsEngine {
     const startDate = new Date();
 
     switch (period) {
-      case 'day':
+      case "day":
         startDate.setDate(endDate.getDate() - 1);
         break;
-      case 'week':
+      case "week":
         startDate.setDate(endDate.getDate() - 7);
         break;
-      case 'month':
+      case "month":
         startDate.setMonth(endDate.getMonth() - 1);
         break;
-      case 'year':
+      case "year":
         startDate.setFullYear(endDate.getFullYear() - 1);
         break;
     }
 
-    const analytics = await this.tracker.getUsageAnalytics(customerId, startDate, endDate);
-    const aiAnalytics = await this.tracker.getAIUsageAnalytics(customerId, startDate, endDate);
+    const analytics = await this.tracker.getUsageAnalytics(
+      customerId,
+      startDate,
+      endDate
+    );
+    const aiAnalytics = await this.tracker.getAIUsageAnalytics(
+      customerId,
+      startDate,
+      endDate
+    );
 
     return {
       summary: {
         totalUsage: analytics.totalUsage,
         totalCost: analytics.totalCost + aiAnalytics.totalCost,
         topFeatures: analytics.topFeatures,
-        averageDailyUsage: analytics.totalUsage / analytics.dailyBreakdown.length,
+        averageDailyUsage:
+          analytics.totalUsage / analytics.dailyBreakdown.length,
       },
       trends: {
         usageGrowth: this.calculateGrowthRate(analytics.dailyBreakdown),
         costGrowth: this.calculateGrowthRate(
-          analytics.dailyBreakdown.map(d => ({ ...d, usage: d.cost }))
+          analytics.dailyBreakdown.map((d) => ({ ...d, usage: d.cost }))
         ),
         peakUsageDay: this.findPeakDay(analytics.dailyBreakdown),
         peakUsageHour: this.findPeakHour(analytics.dailyBreakdown),
@@ -262,7 +293,9 @@ export class UsageAnalyticsEngine {
   }
 
   private findPeakDay(data: Array<{ date: string; usage: number }>): string {
-    return data.reduce((peak, current) => (current.usage > peak.usage ? current : peak)).date;
+    return data.reduce((peak, current) =>
+      current.usage > peak.usage ? current : peak
+    ).date;
   }
 
   private findPeakHour(_data: Array<{ date: string; usage: number }>): number {
@@ -274,11 +307,15 @@ export class UsageAnalyticsEngine {
     const recommendations: string[] = [];
 
     if (analytics.totalCost > 1000) {
-      recommendations.push('Consider upgrading to a higher tier plan to reduce per-unit costs');
+      recommendations.push(
+        "Consider upgrading to a higher tier plan to reduce per-unit costs"
+      );
     }
 
     if (aiAnalytics.totalTokens > 100000) {
-      recommendations.push('High AI usage detected - consider implementing usage-based pricing');
+      recommendations.push(
+        "High AI usage detected - consider implementing usage-based pricing"
+      );
     }
 
     if (analytics.topFeatures.length > 0) {

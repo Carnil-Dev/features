@@ -58,7 +58,11 @@ var RealTimeUsageMeter = class {
     const key = `${customerId}:${featureId}`;
     const currentUsage = this.usageCache.get(key) || 0;
     const newUsage = currentUsage + usage;
-    const allowed = await this.tracker.checkUsageAllowed(customerId, featureId, usage);
+    const allowed = await this.tracker.checkUsageAllowed(
+      customerId,
+      featureId,
+      usage
+    );
     if (!allowed.allowed) {
       return false;
     }
@@ -118,8 +122,16 @@ var UsageAnalyticsEngine = class {
         startDate.setFullYear(endDate.getFullYear() - 1);
         break;
     }
-    const analytics = await this.tracker.getUsageAnalytics(customerId, startDate, endDate);
-    const aiAnalytics = await this.tracker.getAIUsageAnalytics(customerId, startDate, endDate);
+    const analytics = await this.tracker.getUsageAnalytics(
+      customerId,
+      startDate,
+      endDate
+    );
+    const aiAnalytics = await this.tracker.getAIUsageAnalytics(
+      customerId,
+      startDate,
+      endDate
+    );
     return {
       summary: {
         totalUsage: analytics.totalUsage,
@@ -146,7 +158,9 @@ var UsageAnalyticsEngine = class {
     return (last - first) / first * 100;
   }
   findPeakDay(data) {
-    return data.reduce((peak, current) => current.usage > peak.usage ? current : peak).date;
+    return data.reduce(
+      (peak, current) => current.usage > peak.usage ? current : peak
+    ).date;
   }
   findPeakHour(_data) {
     return 14;
@@ -154,10 +168,14 @@ var UsageAnalyticsEngine = class {
   generateRecommendations(analytics, aiAnalytics) {
     const recommendations = [];
     if (analytics.totalCost > 1e3) {
-      recommendations.push("Consider upgrading to a higher tier plan to reduce per-unit costs");
+      recommendations.push(
+        "Consider upgrading to a higher tier plan to reduce per-unit costs"
+      );
     }
     if (aiAnalytics.totalTokens > 1e5) {
-      recommendations.push("High AI usage detected - consider implementing usage-based pricing");
+      recommendations.push(
+        "High AI usage detected - consider implementing usage-based pricing"
+      );
     }
     if (analytics.topFeatures.length > 0) {
       const topFeature = analytics.topFeatures[0];
@@ -226,7 +244,9 @@ var AIMetricsCalculator = class {
     this.tokenUsages = tokenUsages;
   }
   calculateModelPerformance(modelId, period = "month") {
-    const modelUsages = this.tokenUsages.filter((usage) => usage.modelId === modelId);
+    const modelUsages = this.tokenUsages.filter(
+      (usage) => usage.modelId === modelId
+    );
     const periodUsages = this.filterByPeriod(modelUsages, period);
     if (periodUsages.length === 0) {
       return {
@@ -241,7 +261,10 @@ var AIMetricsCalculator = class {
         period
       };
     }
-    const totalTokens = periodUsages.reduce((sum, usage) => sum + usage.totalTokens, 0);
+    const totalTokens = periodUsages.reduce(
+      (sum, usage) => sum + usage.totalTokens,
+      0
+    );
     const totalCost = periodUsages.reduce((sum, usage) => sum + usage.cost, 0);
     const totalRequests = periodUsages.length;
     return {
@@ -257,7 +280,9 @@ var AIMetricsCalculator = class {
     };
   }
   calculateCostAnalysis(customerId, period = "month") {
-    const customerUsages = this.tokenUsages.filter((usage) => usage.customerId === customerId);
+    const customerUsages = this.tokenUsages.filter(
+      (usage) => usage.customerId === customerId
+    );
     const periodUsages = this.filterByPeriod(customerUsages, period);
     const totalCost = periodUsages.reduce((sum, usage) => sum + usage.cost, 0);
     const costByModel = this.groupBy(periodUsages, "modelId", "cost");
@@ -277,7 +302,9 @@ var AIMetricsCalculator = class {
     };
   }
   calculateUsagePatterns(customerId, period = "month") {
-    const customerUsages = this.tokenUsages.filter((usage) => usage.customerId === customerId);
+    const customerUsages = this.tokenUsages.filter(
+      (usage) => usage.customerId === customerId
+    );
     const periodUsages = this.filterByPeriod(customerUsages, period);
     const peakHours = this.calculatePeakHours(periodUsages);
     const peakDays = this.calculatePeakDays(periodUsages);
@@ -365,7 +392,9 @@ var AIMetricsCalculator = class {
   calculatePeakDays(usages) {
     const dailyUsage = {};
     usages.forEach((usage) => {
-      const day = usage.timestamp.toLocaleDateString("en-US", { weekday: "long" });
+      const day = usage.timestamp.toLocaleDateString("en-US", {
+        weekday: "long"
+      });
       if (!dailyUsage[day]) {
         dailyUsage[day] = 0;
       }
@@ -386,7 +415,10 @@ var AIMetricsCalculator = class {
       sessionTokens[sessionId] += usage.totalTokens;
     });
     const totalSessions = Object.keys(sessionTokens).length;
-    const totalTokens = Object.values(sessionTokens).reduce((sum, tokens) => sum + tokens, 0);
+    const totalTokens = Object.values(sessionTokens).reduce(
+      (sum, tokens) => sum + tokens,
+      0
+    );
     return totalSessions > 0 ? totalTokens / totalSessions : 0;
   }
   calculateMostUsedModels(usages) {
@@ -406,9 +438,14 @@ var AIMetricsCalculator = class {
 };
 function generateAIMetricsDashboard(tokenUsages, customerId, period = "month") {
   const calculator = new AIMetricsCalculator(tokenUsages);
-  const customerUsages = tokenUsages.filter((usage) => usage.customerId === customerId);
+  const customerUsages = tokenUsages.filter(
+    (usage) => usage.customerId === customerId
+  );
   const periodUsages = calculator["filterByPeriod"](customerUsages, period);
-  const totalTokens = periodUsages.reduce((sum, usage) => sum + usage.totalTokens, 0);
+  const totalTokens = periodUsages.reduce(
+    (sum, usage) => sum + usage.totalTokens,
+    0
+  );
   const totalCost = periodUsages.reduce((sum, usage) => sum + usage.cost, 0);
   const totalRequests = periodUsages.length;
   const uniqueModels = [...new Set(periodUsages.map((usage) => usage.modelId))];

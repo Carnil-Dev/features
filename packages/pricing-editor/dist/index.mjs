@@ -1402,9 +1402,9 @@ function pricingEditorReducer(state, action) {
       const newUndoStack = state.undoStack.slice(0, -1);
       return {
         ...state,
-        currentPlan: previousPlan,
+        currentPlan: previousPlan || null,
         undoStack: newUndoStack,
-        redoStack: [state.currentPlan, ...state.redoStack],
+        redoStack: state.currentPlan ? [state.currentPlan, ...state.redoStack] : state.redoStack,
         selectedTier: null
       };
     case "REDO":
@@ -1413,15 +1413,15 @@ function pricingEditorReducer(state, action) {
       const newRedoStack = state.redoStack.slice(1);
       return {
         ...state,
-        currentPlan: nextPlan,
-        undoStack: [...state.undoStack, state.currentPlan],
+        currentPlan: nextPlan || null,
+        undoStack: state.currentPlan ? [...state.undoStack, state.currentPlan] : state.undoStack,
         redoStack: newRedoStack,
         selectedTier: null
       };
     case "RESET":
       return {
         ...state,
-        currentPlan: state.history.length > 0 ? state.history[0] : null,
+        currentPlan: state.history.length > 0 ? state.history[0] || null : null,
         selectedTier: null,
         isEditing: false,
         isPreviewMode: false,
